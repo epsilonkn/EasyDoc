@@ -55,7 +55,7 @@ class Analyse:
     
 
     def is_function(self, line : str, in_class = False):
-        pat = r"def\s+[a-zA-Z_]\w*\s*\(.*\)\s*:" if not in_class else r"\tdef\s+[a-zA-Z_]\w*\s*\(.*\)\s*:"
+        pat = r"def\s+[a-zA-Z_]\w*\s*\(.*\)\s*:" if not in_class else r"\s+def\s+[a-zA-Z_]\w*\s*\(.*\)\s*:"
         return re.search(pat, line)
 
 
@@ -71,7 +71,12 @@ class Analyse:
 
 
     def function_parser(self, sub_source : list[str]) -> int: 
-        pointer = 1
+        pointer =1
+        while pointer < len(sub_source) and not self.is_function(sub_source[pointer], in_class=True) and not self.is_class(sub_source[pointer]) :
+            if False :
+                pass
+            else :
+                pointer += 1
         return pointer
 
 
