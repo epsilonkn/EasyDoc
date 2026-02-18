@@ -30,7 +30,17 @@ class Analyse:
     et identifie les docstrings présents pour chaque classe et fonction
     """
 
-    def __init__(self, path : str = ""):
+    def __init__(self, path):
+        """
+        initialise les attributs de la classe :
+        -fpath contient le chemin vers le fichier source
+        -fname contient le nom du fichier source
+        -parse est une liste contenant les classes et fonctions indépendantes scrappées
+        -intro contient le docstring en en-tête du fichier source
+
+        Args:
+            path (str): chemin vers le fichier source.
+        """
         self.fpath = Path(path)
         self.fname = self.fpath.stem
         self.parse : list[Parsed_class, Parsed_function] = []
@@ -207,8 +217,8 @@ class Analyse:
         
 
 if __name__ == "__main__" :
-    if sys.argv >= 2 :
+    if len(sys.argv) >= 2 :
         path = sys.argv[1]
         Analyse(path)
     else :
-        raise "Aucun fichier source fourni, arrêt du programme"
+        raise IndexError("Aucun fichier source fourni, arrêt du programme")

@@ -32,9 +32,18 @@ Description :
 
 Déclaration :
 
-	    def __init__(self, path : str = ""):
+	    def __init__(self, path):
 
 Description :
+        
+        initialise les attributs de la classe :
+        -fpath contient le chemin vers le fichier source
+        -fname contient le nom du fichier source
+        -parse est une liste contenant les classes et fonctions indépendantes scrappées
+        -intro contient le docstring en en-tête du fichier source
+
+        Args:
+            path (str): chemin vers le fichier source.
 
 #### **Methode parse_source :**
 

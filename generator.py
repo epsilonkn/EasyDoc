@@ -13,6 +13,7 @@ import os
 
 class Generator:
 
+    @staticmethod
     def run(obj_list, intro, fname):
         body : str= Generator.open_pattern()
         body = body.replace("%intro%", intro)
@@ -27,20 +28,27 @@ class Generator:
 
         Generator.create_file(fname, body)
 
+    @staticmethod
     def class_wrap(name) : return f"\n### Classe {name} :\n"
+    @staticmethod
     def method_wrap(name) : return f"\n#### **Methode {name} :**\n"
+    @staticmethod
     def function_wrap(name) : return f"\n### Fonction {name} :\n"
 
+
+    @staticmethod
     def open_pattern():
         with open("pattern.md", 'r', encoding="utf-8") as f:
             return f.read()
         
     
+    @staticmethod
     def create_file(name, body):
         with open(f"{os.getcwd()}/{name}_doc.md", 'w', encoding="utf-8") as f:
             return f.write(body)
 
 
+    @staticmethod
     def generate_class(classe : Parsed_class):
         subbody = Generator.class_wrap(classe.name)
         subbody += f"\nDéclaration :\n\n\t{classe.declaration}"
@@ -51,6 +59,7 @@ class Generator:
         return subbody
 
 
+    @staticmethod
     def generate_function(func : Parsed_function, in_class : bool = False):
         if in_class :
             subbody = Generator.method_wrap(func.name)
@@ -59,6 +68,7 @@ class Generator:
 
         
         subbody += f"\nDéclaration :\n\n\t{func.declaration}"
-        subbody += f"\nDescription :\n{func.docstring}"
+        if func.docstring:
+            subbody += f"\nDescription :\n\n\t{func.docstring}"
 
         return subbody
