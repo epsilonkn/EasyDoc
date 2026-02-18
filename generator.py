@@ -8,6 +8,7 @@
 #-----------------------------------------------------------------------------------------
 
 from objects import *
+import os
 
 
 class Generator:
@@ -36,7 +37,7 @@ class Generator:
         
     
     def create_file(name, body):
-        with open(f"{name}_doc.md", 'w', encoding="utf-8") as f:
+        with open(f"{os.getcwd()}/{name}_doc.md", 'w', encoding="utf-8") as f:
             return f.write(body)
 
 
