@@ -13,25 +13,33 @@ import re
 
 class Parsed_function:
 
-    def __init__(self, name, docstring):
-        self.name : str = name
+    def __init__(self, declaration, docstring):
+        self.declaration : str = declaration
         self.docstring : str = docstring
 
 
 
 class Parsed_class:
 
-    def __init__(self, name, docstring):
-        self.name : str = name
+    def __init__(self, declaration, docstring):
+        self.declaration : str = declaration
         self.docstring : str = docstring
         self.methods : list[Parsed_function] = []
 
 
+    def add_method(self, method : Parsed_function):
+        self.methods.append(method)
+
+
 
 class Analyse:
+    """
+    Cette classe parcours le fichier source, identifie les classes et fonctions
+    et identifie les docstrings présents pour chaque classe et fonction
+    """
 
     def __init__(self, path : str = ""):
-        self.fpath = Path("./analyser.py")
+        self.fpath = Path("..\Log-Manager\log.py")
         self.parse : list[Parsed_class, Parsed_function] = []
         self.parse_source()
 
@@ -51,33 +59,90 @@ class Analyse:
 
 
     def is_class(self, line: str):
-        return  re.search(r"class\s.*:", line)
+        return  re.search(r"^class\s.*:", line)
     
 
-    def is_function(self, line : str, in_class = False):
-        pat = r"def\s+[a-zA-Z_]\w*\s*\(.*\)\s*:" if not in_class else r"\s+def\s+[a-zA-Z_]\w*\s*\(.*\)\s*:"
+    def is_function(self, line : str, in_class = False) -> bool:
+        """
+        Vérifie si la ligne du pointer est une déclaration de fonction
+
+        Args:
+            line (str): ligne à vérifier
+            in_class (bool, optional): indique si il s'agit d'une méthode ou d'une fonction. Defaults to False.
+
+        Returns:
+            bool: retourne True si il s'agit d'une déclaration de fonction, False sinon
+        """
+
+        if not in_class : pat = r"^def\s+[a-zA-Z_]\w*\s*\(.*\).*\s*:"
+        else : pat = r"^\s+def\s+[a-zA-Z_]\w*\s*\(.*\).*\s*:"
+
         return re.search(pat, line)
 
 
     def class_parser(self, sub_source : list[str]) -> int: 
+        obj = Parsed_class(sub_source[0], "")
         pointer = 1
+        docstring = ""
         while pointer < len(sub_source) and not self.is_class(sub_source[pointer]) :
-            if self.is_function(sub_source[pointer], in_class=True) : 
+
+            if self.is_oneline_docstring(sub_source[pointer]) : 
+                docstring = sub_source[pointer].replace('"""', "")
+                pointer +=1
+                print(docstring)
+
+            elif self.is_docstring(sub_source[pointer]) : 
+                docstring += sub_source[pointer].replace('"""', "")
+                pointer +=1
+                while not self.is_docstring(sub_source[pointer]):
+                    docstring += sub_source[pointer].replace('"""', "")
+                    pointer +=1
+                print(docstring)
+                pointer +=1
+
+            elif self.is_function(sub_source[pointer], in_class=True) : 
                 print(sub_source[pointer])
-                pointer += self.function_parser(sub_source[pointer])
+                pointer += self.function_parser(sub_source[pointer:], obj)
+
             else :
                 pointer += 1
+        obj.docstring = docstring
         return pointer
 
 
-    def function_parser(self, sub_source : list[str]) -> int: 
+    def function_parser(self, sub_source : list[str], parent : Parsed_class = None) -> int: 
+        declaration = sub_source[0]
         pointer =1
+        docstring = ""
         while pointer < len(sub_source) and not self.is_function(sub_source[pointer], in_class=True) and not self.is_class(sub_source[pointer]) :
-            if False :
-                pass
+            if self.is_oneline_docstring(sub_source[pointer]) : 
+                docstring = sub_source[pointer].replace('"""', "")
+                pointer +=1
+                print(docstring)
+
+            elif self.is_docstring(sub_source[pointer]) : 
+                docstring += sub_source[pointer].replace('"""', "")
+                pointer +=1
+                while not self.is_docstring(sub_source[pointer]):
+                    docstring += sub_source[pointer].replace('"""', "")
+                    pointer +=1
+                print(docstring)
+                pointer +=1
             else :
                 pointer += 1
+        obj = Parsed_function(declaration, docstring)    
+        if parent :
+            parent.add_method(obj)
+        else :
+            self.parse.append(obj)
         return pointer
+    
+
+    def is_docstring(self, line: list[str]) -> str:
+        return re.search(r"[^']\"{3}", line)
+    
+    def is_oneline_docstring(self, line: list[str]) -> str:
+        return line.count('"""') == 2
 
 
     def get_source(self):
