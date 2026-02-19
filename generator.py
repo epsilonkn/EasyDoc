@@ -7,15 +7,19 @@
 #
 #-----------------------------------------------------------------------------------------
 
+from pathlib import Path
+
 from objects import *
 import os
 
 
 class Generator:
 
+    base = "# %nom_module%\n\n# Présentation\n\n%intro%\n\n## Utilisation\n\n## Détail des classes et fonctions\n\n"
+
     @staticmethod
     def run(obj_list, intro, fname):
-        body : str= Generator.open_pattern()
+        body : str= Generator.base
         body = body.replace("%intro%", intro)
         body = body.replace("%nom_module%", fname)
         for elt in obj_list :
@@ -29,16 +33,19 @@ class Generator:
         Generator.create_file(fname, body)
 
     @staticmethod
-    def class_wrap(name) : return f"\n### Classe {name} :\n---\n"
+    def class_wrap(name) : 
+        return f"\n### Classe {name} :\n---\n"
     @staticmethod
-    def method_wrap(name) : return f"\n#### **Methode {name} :**\n"
+    def method_wrap(name) : 
+        return f"\n#### **Methode {name} :**\n"
     @staticmethod
-    def function_wrap(name) : return f"\n### Fonction {name} :\n"
+    def function_wrap(name) : 
+        return f"\n### Fonction {name} :\n"
 
 
     @staticmethod
     def open_pattern():
-        with open("pattern.md", 'r', encoding="utf-8") as f:
+        with open(str(Path(__file__).parent) +"/pattern.md", 'r', encoding="utf-8") as f:
             return f.read()
         
     

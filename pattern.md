@@ -7,5 +7,3 @@
 ## Utilisation
 
 ## Détail des classes et fonctions
-
-

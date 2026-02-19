@@ -9,12 +9,16 @@ Raises:
 
 #-----------------------------------------------------------------------------------------
 # Fichier : analyser.py
-# Version : 1
+# Version : 1.1
 # Dernier changement : 17/02/2026                         
 # dernier éditeur : Ywan GERARD
 # Créateur : Ywan GERARD
 #
 #-----------------------------------------------------------------------------------------
+
+# ajout du choix du parsing d'un fichier ou d'un dossier
+# ajout de commandes spéciales (version, updates, métadonnées d'un fichier)
+#
 
 from pathlib import Path
 import re
@@ -24,7 +28,7 @@ from generator import Generator
 
 
 
-class Analyse:
+class Parser:
     """
     Cette classe parcours le fichier source, identifie les classes et fonctions
     et identifie les docstrings présents pour chaque classe et fonction
@@ -155,12 +159,12 @@ class Analyse:
         decla = ""
         pointer = 0
 
-        opened = lines.count("(") - lines.count(")")
+        opened = lines[pointer].count("(") - lines[pointer].count(")")
         decla = lines[0]
         while opened != 0 and pointer < len(lines):
             pointer += 1
-            opened += lines.count("(") - lines.count(")")
-            decla += lines[pointer].replace("\n", "")
+            opened += lines[pointer].count("(") - lines[pointer].count(")")
+            decla += lines[pointer]
         if opened == 0:
             return self.format_string(decla), pointer + 1
         if not opened and pointer >= len(lines):
@@ -181,7 +185,7 @@ class Analyse:
         obj = Parsed_class(sub_source[0], "")
         pointer = 1
         docstring = ""
-        while pointer < len(sub_source) and not self.is_class(sub_source[pointer]) :
+        while pointer < len(sub_source) and not self.is_class(sub_source[pointer]) and not self.is_function(sub_source[pointer:]) :
 
             if self.is_oneline_docstring(sub_source[pointer]) : 
                 docstring = self.format_string(sub_source[pointer].replace('"""', ""))
@@ -220,20 +224,25 @@ class Analyse:
         """        
         declaration, pointer = self.get_function_declaration(sub_source)
         docstring = ""
-        while pointer < len(sub_source) and not self.is_function(sub_source[pointer:], in_class=True) and not self.is_class(sub_source[pointer]) :
-            if self.is_oneline_docstring(sub_source[pointer]) : 
-                docstring = self.format_string(sub_source[pointer].replace('"""', ""))
-                pointer +=1
+        while pointer < len(sub_source) \
+            and not self.is_function(sub_source[pointer:], in_class=True) \
+            and not self.is_class(sub_source[pointer]) \
+            and not self.is_function(sub_source[pointer:]) :
+                
+                if self.is_oneline_docstring(sub_source[pointer]) : 
 
-            elif self.is_docstring(sub_source[pointer]) : 
-                docstring += self.format_string(sub_source[pointer].replace('"""', ""))
-                pointer +=1
-                while not self.is_docstring(sub_source[pointer]):
+                    docstring = self.format_string(sub_source[pointer].replace('"""', ""))
+                    pointer +=1
+
+                elif self.is_docstring(sub_source[pointer]) : 
                     docstring += self.format_string(sub_source[pointer].replace('"""', ""))
                     pointer +=1
-                pointer +=1
-            else :
-                pointer += 1
+                    while not self.is_docstring(sub_source[pointer]):
+                        docstring += self.format_string(sub_source[pointer].replace('"""', ""))
+                        pointer +=1
+                    pointer +=1
+                else :
+                    pointer += 1
         obj = Parsed_function(declaration, docstring)    
         if parent :
             parent.add_method(obj)
@@ -299,6 +308,6 @@ class Analyse:
 if __name__ == "__main__" :
     if len(sys.argv) >= 2 :
         path = sys.argv[1]
-        Analyse(path)
+        Parser(path)
     else :
         raise IndexError("Aucun fichier source fourni, arrêt du programme")
