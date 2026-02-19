@@ -29,7 +29,7 @@ class Generator:
         Generator.create_file(fname, body)
 
     @staticmethod
-    def class_wrap(name) : return f"\n### Classe {name} :\n"
+    def class_wrap(name) : return f"\n### Classe {name} :\n---\n"
     @staticmethod
     def method_wrap(name) : return f"\n#### **Methode {name} :**\n"
     @staticmethod
@@ -67,8 +67,8 @@ class Generator:
             subbody = Generator.function_wrap(func.name)
 
         
-        subbody += f"\nDéclaration :\n\n\t{func.declaration}"
+        subbody += f"\nDéclaration :\n\n{func.declaration}"
         if func.docstring:
-            subbody += f"\nDescription :\n\n\t{func.docstring}"
+            subbody += f"\nDescription :\n\n{func.docstring}"
 
         return subbody

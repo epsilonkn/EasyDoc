@@ -6,6 +6,6 @@
 
 ## Utilisation
 
-## Détail du contenu
+## Détail des classes et fonctions
 
 

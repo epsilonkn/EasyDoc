@@ -49,6 +49,7 @@ class Analyse:
 
 
     def parse_source(self):
+
         source : list[str]= self.get_source()
         pointer = 0
         while pointer < len(source):
@@ -141,9 +142,9 @@ class Analyse:
             opened += lines.count("(") - lines.count(")")
             decla += lines[pointer].replace("\n", "")
         if opened == 0:
-            return decla, pointer + 1
+            return self.format_docstring(decla), pointer + 1
         if not opened and pointer >= len(lines):
-            raise IndexError(f"a parenthesis was openedbut never closed on line \n {lines[0]}\nFailed to parse the module")
+            raise IndexError(f"a parenthesis was opened but never closed on line \n {lines[0]}\nFailed to parse the module")
 
 
     def class_parser(self, sub_source : list[str]) -> int: 
@@ -153,15 +154,15 @@ class Analyse:
         while pointer < len(sub_source) and not self.is_class(sub_source[pointer]) :
 
             if self.is_oneline_docstring(sub_source[pointer]) : 
-                docstring = sub_source[pointer].replace('"""', "")
+                docstring = self.format_docstring(sub_source[pointer].replace('"""', ""))
                 pointer +=1
                 print(docstring)
 
             elif self.is_docstring(sub_source[pointer]) : 
-                docstring += sub_source[pointer].replace('"""', "")
+                docstring += self.format_docstring(sub_source[pointer].replace('"""', ""))
                 pointer +=1
                 while not self.is_docstring(sub_source[pointer]):
-                    docstring += sub_source[pointer].replace('"""', "")
+                    docstring += self.format_docstring(sub_source[pointer].replace('"""', ""))
                     pointer +=1
                 print(docstring)
                 pointer +=1
@@ -182,15 +183,15 @@ class Analyse:
         docstring = ""
         while pointer < len(sub_source) and not self.is_function(sub_source[pointer:], in_class=True) and not self.is_class(sub_source[pointer]) :
             if self.is_oneline_docstring(sub_source[pointer]) : 
-                docstring = sub_source[pointer].replace('"""', "")
+                docstring = self.format_docstring(sub_source[pointer].replace('"""', ""))
                 pointer +=1
                 print(docstring)
 
             elif self.is_docstring(sub_source[pointer]) : 
-                docstring += sub_source[pointer].replace('"""', "")
+                docstring += self.format_docstring(sub_source[pointer].replace('"""', ""))
                 pointer +=1
                 while not self.is_docstring(sub_source[pointer]):
-                    docstring += sub_source[pointer].replace('"""', "")
+                    docstring += self.format_docstring(sub_source[pointer].replace('"""', ""))
                     pointer +=1
                 print(docstring)
                 pointer +=1
@@ -209,6 +210,9 @@ class Analyse:
     
     def is_oneline_docstring(self, line: str) -> str:
         return line.count('"""') == 2
+
+    def format_docstring(self, docstr : str) -> str :
+        return re.sub(r"\t{2,}", "\t", docstr)  if "\t" in docstr else "\t" + docstr
 
 
     def get_source(self):

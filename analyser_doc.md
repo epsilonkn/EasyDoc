@@ -13,11 +13,12 @@ Raises:
 
 ## Utilisation
 
-## Détail du contenu
+## Détail des classes et fonctions
 
 
 
 ### Classe Analyse :
+---
 
 Déclaration :
 
@@ -32,9 +33,10 @@ Description :
 
 Déclaration :
 
-	    def __init__(self, path):
+    def __init__(self, path):
 
 Description :
+
         
         initialise les attributs de la classe :
         -fpath contient le chemin vers le fichier source
@@ -49,25 +51,22 @@ Description :
 
 Déclaration :
 
-	    def parse_source(self):
-
-Description :
+    def parse_source(self):
 
 #### **Methode is_class :**
 
 Déclaration :
 
-	    def is_class(self, line: str):
-
-Description :
+    def is_class(self, line: str):
 
 #### **Methode is_function :**
 
 Déclaration :
 
-	    def is_function(self, lines : list[str], in_class = False) -> bool:
+    def is_function(self, lines : list[str], in_class = False) -> bool:
 
 Description :
+
         
         Vérifie si la ligne du pointer est le début d'une fonction dont l'en-tête est sur plusieurs lignes :
         ex : 
@@ -88,9 +87,10 @@ Description :
 
 Déclaration :
 
-	    def get_function_declaration(self, lines : list[str]) -> str:
+    def get_function_declaration(self, lines : list[str]) -> str:
 
 Description :
+
         
         Récupère la déclaration de la fonction et la retoure
         ex : 
@@ -111,38 +111,34 @@ Description :
 
 Déclaration :
 
-	    def class_parser(self, sub_source : list[str]) -> int: 
-
-Description :
+    def class_parser(self, sub_source : list[str]) -> int: 
 
 #### **Methode function_parser :**
 
 Déclaration :
 
-	    def function_parser(self, sub_source : list[str], parent : Parsed_class = None) -> int: 
-
-Description :
+    def function_parser(self, sub_source : list[str], parent : Parsed_class = None) -> int: 
 
 #### **Methode is_docstring :**
 
 Déclaration :
 
-	    def is_docstring(self, line: str) -> str:
-
-Description :
+    def is_docstring(self, line: str) -> str:
 
 #### **Methode is_oneline_docstring :**
 
 Déclaration :
 
-	    def is_oneline_docstring(self, line: str) -> str:
+    def is_oneline_docstring(self, line: str) -> str:
 
-Description :
+#### **Methode format_docstring :**
+
+Déclaration :
+
+    def format_docstring(self, docstr : str) -> str :
 
 #### **Methode get_source :**
 
 Déclaration :
 
-	    def get_source(self):
-
-Description :
+    def get_source(self):
