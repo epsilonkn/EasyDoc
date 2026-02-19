@@ -49,14 +49,18 @@ class Analyse:
 
 
     def parse_source(self):
-
+        """
+        parcours le code à la recherche d'une déclaration de classe, de fonction
+        et recherche un docstring rattaché à aucune classe ni fonction
+        ce docstring indépendant est interprété comme une explication du fichier source
+        """
         source : list[str]= self.get_source()
         pointer = 0
+        print("classes and functions found :")
         while pointer < len(source):
             if self.is_oneline_docstring(source[pointer]) : 
                 self.intro = source[pointer].replace('"""', "")
                 pointer +=1
-                print(self.intro)
 
             elif self.is_docstring(source[pointer]) : 
                 self.intro += source[pointer].replace('"""', "")
@@ -64,7 +68,6 @@ class Analyse:
                 while not self.is_docstring(source[pointer]):
                     self.intro += source[pointer].replace('"""', "")
                     pointer +=1
-                print(self.intro)
                 pointer +=1
             elif self.is_class(source[pointer]): 
                 print(source[pointer]) # délencher le parseur de classes
@@ -77,22 +80,35 @@ class Analyse:
         Generator.run(self.parse, self.intro, self.fname)
 
 
-    def is_class(self, line: str):
-        return  re.search(r"^class\s.*:", line)
+    def is_class(self, line: str) -> bool:
+        """
+        Vérifie si une ligne est une déclaration de classe
+
+        Args:
+            line (str): ligne à vérifier
+
+        Returns:
+            bool: retourne True si la ligne est une déclaration de classe, False sinon
+        """
+        return bool(re.search(r"^class\s.*:", line))
     
 
     def is_function(self, lines : list[str], in_class = False) -> bool:
         """
-        Vérifie si la ligne du pointer est le début d'une fonction dont l'en-tête est sur plusieurs lignes :
+        Vérifie si la ligne du pointer est une fonction, ou le début d'une fonction dont l'en-tête est sur plusieurs lignes :
         ex : 
 
+        def funct( param1 = "foo", param2 = ("poo", 1)) -> None:
+
+        ou
+
         def funct(
-            param1 = "foo"
+            param1 = "foo",
             param2 = ("poo", 1)
         ) -> None:
 
         Args:
-            line (str): ligne à vérifier
+            line (list[str]): lignes à vérifier
             in_class (bool, optional): indique si il s'agit d'une méthode ou d'une fonction. Defaults to False.
 
         Returns:
@@ -120,13 +136,17 @@ class Analyse:
         Récupère la déclaration de la fonction et la retoure
         ex : 
 
+        def funct( param1 = "foo", param2 = ("poo", 1)) -> None:
+
+        ou
+
         def funct(
-            param1 = "foo"
+            param1 = "foo",
             param2 = ("poo", 1)
         ) -> None:
 
         Args:
-            line (str): lignes où se trouve la déclaration
+            line (list[str]): lignes où se trouvent la déclaration
             in_class (bool, optional): indique si il s'agit d'une méthode ou d'une fonction. Defaults to False.
 
         Returns:
@@ -142,29 +162,37 @@ class Analyse:
             opened += lines.count("(") - lines.count(")")
             decla += lines[pointer].replace("\n", "")
         if opened == 0:
-            return self.format_docstring(decla), pointer + 1
+            return self.format_string(decla), pointer + 1
         if not opened and pointer >= len(lines):
             raise IndexError(f"a parenthesis was opened but never closed on line \n {lines[0]}\nFailed to parse the module")
 
 
     def class_parser(self, sub_source : list[str]) -> int: 
+        """
+        isole la déclaration d'une classe, son docstring éventuel,
+        puis parcours le code de la classe à la recherche de méthodes
+
+        Args:
+            sub_source (list[str]): code source commençant à partir de la déclaration de la classe
+
+        Returns:
+            int: retourne la taille de la classe en nombre de ligne, évite que le parseur principal repasse sur du code déjà parsé
+        """
         obj = Parsed_class(sub_source[0], "")
         pointer = 1
         docstring = ""
         while pointer < len(sub_source) and not self.is_class(sub_source[pointer]) :
 
             if self.is_oneline_docstring(sub_source[pointer]) : 
-                docstring = self.format_docstring(sub_source[pointer].replace('"""', ""))
+                docstring = self.format_string(sub_source[pointer].replace('"""', ""))
                 pointer +=1
-                print(docstring)
 
             elif self.is_docstring(sub_source[pointer]) : 
-                docstring += self.format_docstring(sub_source[pointer].replace('"""', ""))
+                docstring += self.format_string(sub_source[pointer].replace('"""', ""))
                 pointer +=1
                 while not self.is_docstring(sub_source[pointer]):
-                    docstring += self.format_docstring(sub_source[pointer].replace('"""', ""))
+                    docstring += self.format_string(sub_source[pointer].replace('"""', ""))
                     pointer +=1
-                print(docstring)
                 pointer +=1
 
             elif self.is_function(sub_source[pointer:], in_class=True) : 
@@ -178,22 +206,31 @@ class Analyse:
         return pointer
 
 
-    def function_parser(self, sub_source : list[str], parent : Parsed_class = None) -> int: 
+    def function_parser(self, sub_source : list[str], parent : Parsed_class = None) -> int:
+        """
+        isole la déclaration d'une fonction et récupère son docstring éventuel,
+
+        Args:
+            sub_source (list[str]): code source commençant à partir de la déclaration de la fonction
+            parent (Parsed_class, optional): si le paramètre est fourni, alors function_parser
+            considèrera que la fonction à scraper est une méthode appartenant à la classe "parent". Defaults to None.
+
+        Returns:
+            int: retourne la taille de la fonction en nombre de ligne, évite que le parseur principal repasse sur du code déjà parsé
+        """        
         declaration, pointer = self.get_function_declaration(sub_source)
         docstring = ""
         while pointer < len(sub_source) and not self.is_function(sub_source[pointer:], in_class=True) and not self.is_class(sub_source[pointer]) :
             if self.is_oneline_docstring(sub_source[pointer]) : 
-                docstring = self.format_docstring(sub_source[pointer].replace('"""', ""))
+                docstring = self.format_string(sub_source[pointer].replace('"""', ""))
                 pointer +=1
-                print(docstring)
 
             elif self.is_docstring(sub_source[pointer]) : 
-                docstring += self.format_docstring(sub_source[pointer].replace('"""', ""))
+                docstring += self.format_string(sub_source[pointer].replace('"""', ""))
                 pointer +=1
                 while not self.is_docstring(sub_source[pointer]):
-                    docstring += self.format_docstring(sub_source[pointer].replace('"""', ""))
+                    docstring += self.format_string(sub_source[pointer].replace('"""', ""))
                     pointer +=1
-                print(docstring)
                 pointer +=1
             else :
                 pointer += 1
@@ -205,17 +242,56 @@ class Analyse:
         return pointer
     
 
-    def is_docstring(self, line: str) -> str:
-        return re.search(r"(?<!')\"{3}", line)
+    def is_docstring(self, line: str) -> bool:
+        """
+        Vérifie si une ligne est le début d'un docstring sur plusieurs lignes
+
+        Args:
+            line (str): ligne à vérifier
+
+        Returns:
+            bool: retourne True si il s'agit du début d'un docstring, False sinon
+        """
+        return bool(re.search(r"(?<!')\"{3}", line))
     
-    def is_oneline_docstring(self, line: str) -> str:
+
+    def is_oneline_docstring(self, line: str) -> bool:
+        """
+        Vérifie si une ligne est une doctring sur une seule ligne, par exemple :
+
+        '''doctring d'une fonction'''
+
+        Args:
+            line (str): ligne à vérifier
+
+        Returns:
+            bool: retourne True si il s'agit d'un docstring sur une ligne, False sinon
+        """
         return line.count('"""') == 2
 
-    def format_docstring(self, docstr : str) -> str :
-        return re.sub(r"\t{2,}", "\t", docstr)  if "\t" in docstr else "\t" + docstr
+
+    def format_string(self, string : str) -> str :
+        """
+        Formate le string passé en paramètre,
+        remplace les chaine de tabs supérieures à 3 par une double tab,
+        si aucune tab n'est présente dans la chaine, la fonction en ajoute une en début de chaine
+
+        Args:
+            string (str): string à traiter
+
+        Returns:
+            str: retourne la chaine traité selon l'algorithme défini plus haut
+        """
+        return re.sub(r"\t{3,}", "\t\t", string)  if "\t" in string else "\t" + string
 
 
-    def get_source(self):
+    def get_source(self) -> list[str]:
+        """
+        Ouvre et retourne le code source du fichier choisi
+
+        Returns:
+            list[str]: retourne une liste dont chaque élément est une ligne du fichier source à parser
+        """
         with open(self.fpath, 'r', encoding='utf-8') as f:
             return f.readlines()
         
