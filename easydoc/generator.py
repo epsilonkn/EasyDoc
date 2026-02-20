@@ -9,7 +9,7 @@
 
 from pathlib import Path
 
-from objects import *
+from .objects import Parsed_class, Parsed_function
 import os
 
 

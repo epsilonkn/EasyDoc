@@ -23,8 +23,8 @@ Raises:
 from pathlib import Path
 import re
 import sys
-from objects import *
-from generator import Generator
+from .objects import *
+from .generator import Generator
 
 
 
