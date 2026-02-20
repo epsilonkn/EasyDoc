@@ -34,7 +34,7 @@ class Parser:
     et identifie les docstrings présents pour chaque classe et fonction
     """
 
-    def __init__(self, path):
+    def __init__(self, path, automatic : bool = True):
         """
         initialise les attributs de la classe :
         -fpath contient le chemin vers le fichier source
@@ -44,12 +44,26 @@ class Parser:
 
         Args:
             path (str): chemin vers le fichier source.
+            automatic (bool): chemin vers le fichier source.
         """
+        self.auto = automatic
         self.fpath = Path(path)
         self.fname = self.fpath.stem
         self.parse : list[Parsed_class, Parsed_function] = []
         self.intro = ""
         self.parse_source()
+        if self.auto :
+            Generator.run(self.parse, self.intro, self.fname)
+
+        
+
+
+    def get_parse(self): 
+         return self.parse
+    
+    def get_intro(self):
+        return self.intro
+
 
 
     def parse_source(self):
@@ -81,7 +95,6 @@ class Parser:
                 pointer += self.function_parser(source[pointer:])
             else :
                 pointer += 1
-        Generator.run(self.parse, self.intro, self.fname)
 
 
     def is_class(self, line: str) -> bool:
