@@ -15,11 +15,12 @@ import os
 
 class Generator:
 
-    base = "# %nom_module%\n\n# Présentation\n\n%intro%\n\n## Utilisation\n\n## Détail des classes et fonctions\n\n"
+    markdown : str = "# %nom_module%\n\n# Présentation\n\n%intro%\n\n## Utilisation\n\n## Détail des classes et fonctions\n\n"
+    html : str = ""
 
     @staticmethod
     def run(obj_list, intro, fname):
-        body : str= Generator.base
+        body : str= Generator.markdown
         body = body.replace("%intro%", intro)
         body = body.replace("%nom_module%", fname)
         for elt in obj_list :

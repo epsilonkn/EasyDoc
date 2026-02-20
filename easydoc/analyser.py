@@ -10,7 +10,7 @@ Raises:
 #-----------------------------------------------------------------------------------------
 # Fichier : analyser.py
 # Version : 1.1
-# Dernier changement : 17/02/2026                         
+# Dernier changement : 20/02/2026                         
 # dernier éditeur : Ywan GERARD
 # Créateur : Ywan GERARD
 #
