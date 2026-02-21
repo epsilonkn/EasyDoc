@@ -1,6 +1,6 @@
 [project]
 name = "PyEasyDoc"
-version = "1.0.5"
+version = "1.1.1"
 description = "python documentation generator"
 dependencies = []
 authors = [{ name="epsilonkn" }]
@@ -15,6 +15,9 @@ build-backend = "setuptools.build_meta"
 
 [project.scripts]
 easydoc = "easydoc.cli:main"
+
+[tool.setuptools.package-data]
+"easydoc" = ["templates/*.md", "templates/*.html", "config/*.json"]
 
 [project.urls]
 Homepage = "https://github.com/epsilonkn/Log-Manager/tree/main"

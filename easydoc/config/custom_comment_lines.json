@@ -1,0 +1,9 @@
+{
+    "#/actual_version" : "%version%",
+    "#/author" : "%author%",
+    "#/creation_date" : "%creation_date%",
+    "#/last_release_date" : "%last_release_date%",
+    "#/TODO" : "%last_release_date%",
+    "#/planned" : "%roadmap%",
+    "#/file_intro" : "%intro%"
+}

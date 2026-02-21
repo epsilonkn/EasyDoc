@@ -16,9 +16,8 @@ Raises:
 #
 #-----------------------------------------------------------------------------------------
 
-# ajout du choix du parsing d'un fichier ou d'un dossier
+# ajout du choix du parsing d'un dossier
 # ajout de commandes spéciales (version, updates, métadonnées d'un fichier)
-#
 
 from pathlib import Path
 import re
@@ -50,7 +49,7 @@ class Parser:
         self.fpath = Path(path)
         self.fname = self.fpath.stem
         self.parse : list[Parsed_class, Parsed_function] = []
-        self.intro = ""
+        self.file_data = []
         self.parse_source()
         if self.auto :
             MarkdownGenerator(self.parse, self.intro, self.fname)

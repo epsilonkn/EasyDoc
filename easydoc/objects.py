@@ -14,6 +14,14 @@ class Parsed_function:
         self.name = re.search(r"^\s*(?:def|class)\s+([a-zA-Z_]\w*)", declaration).group(1)
 
 
+class Custom_comment:
+
+    def __init__(self, declaration, docstring):
+        self.type_ : str = ""
+        self.ref : str = ""
+        self.content : str = docstring
+
+
 
 class Parsed_class:
 
