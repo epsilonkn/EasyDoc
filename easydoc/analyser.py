@@ -24,7 +24,7 @@ from pathlib import Path
 import re
 import sys
 from .objects import *
-from .generator import Generator
+from .generator import MarkdownGenerator
 
 
 
@@ -53,7 +53,7 @@ class Parser:
         self.intro = ""
         self.parse_source()
         if self.auto :
-            Generator.run(self.parse, self.intro, self.fname)
+            MarkdownGenerator(self.parse, self.intro, self.fname)
 
         
 

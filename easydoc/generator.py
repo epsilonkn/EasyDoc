@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------------------
 # Fichier : analyser.py
-# Version : 1.0
-# Dernier changement : 17/02/2026                         
+# Version : 1.1
+# Dernier changement : 21/02/2026                         
 # dernier éditeur : Ywan GERARD
 # Créateur : Ywan GERARD
 #
@@ -13,25 +13,23 @@ from .objects import Parsed_class, Parsed_function
 import os
 
 
-class Generator:
+class MarkdownGenerator:
 
     markdown : str = "# %nom_module%\n\n# Présentation\n\n%intro%\n\n## Utilisation\n\n## Détail des classes et fonctions\n\n"
-    html : str = ""
 
-    @staticmethod
-    def run(obj_list, intro, fname):
-        body : str= Generator.markdown
+    def __init__(self, obj_list, intro, fname):
+        body : str= self.markdown
         body = body.replace("%intro%", intro)
         body = body.replace("%nom_module%", fname)
         for elt in obj_list :
             if isinstance(elt, Parsed_class):
-                body += Generator.generate_class(elt)
+                body += self.generate_class(elt)
 
         for elt in obj_list :
             if isinstance(elt, Parsed_function):
-                body += Generator.generate_function(elt)
+                body += self.generate_function(elt)
 
-        Generator.create_file(fname, body)
+        self.create_file(fname, body)
 
     @staticmethod
     def class_wrap(name) : 
@@ -56,23 +54,21 @@ class Generator:
             return f.write(body)
 
 
-    @staticmethod
-    def generate_class(classe : Parsed_class):
-        subbody = Generator.class_wrap(classe.name)
+    def generate_class(self, classe : Parsed_class):
+        subbody = self.class_wrap(classe.name)
         subbody += f"\nDéclaration :\n\n\t{classe.declaration}"
         subbody += f"\nDescription :\n{classe.docstring}"
         for func in classe.methods:
-            subbody += Generator.generate_function(func, True)
+            subbody += self.generate_function(func, True)
 
         return subbody
 
 
-    @staticmethod
-    def generate_function(func : Parsed_function, in_class : bool = False):
+    def generate_function(self, func : Parsed_function, in_class : bool = False):
         if in_class :
-            subbody = Generator.method_wrap(func.name)
+            subbody = self.method_wrap(func.name)
         else : 
-            subbody = Generator.function_wrap(func.name)
+            subbody = self.function_wrap(func.name)
 
         
         subbody += f"\nDéclaration :\n\n{func.declaration}"

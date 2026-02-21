@@ -25,13 +25,13 @@ Unfortunately, in the actual state of the module, the control over the module is
 
 If you still wish to do it in a program rather than in command line, here is the base :
 
-    From easydoc import Parser, Generator
+    From easydoc import Parser, MarkdownGenerator
 
     parser = Parser(path = "/path/to/file.py", automatic = False)
     parse_list = parser.get_parse()
     file_header = parser.get_intro()
 
-    Generator.run(parse_list, file_header, doc_file_name)
+    MarkdownGenerator(parse_list, file_header, doc_file_name)
 
 
 
