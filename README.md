@@ -42,6 +42,7 @@ If you still wish to do it in a program rather than in command line, here is the
 |V 1.2.0 | adding custom comment line to add info to the documentation|
 |V 1.3.0| better control over the process when done in a program |
 |V 1.4.0| adding doc generation for an entire directory |
+|V 1.5.0| adding user configuration |
 |......||
 
 ## API :

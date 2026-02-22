@@ -50,12 +50,12 @@ class Parser:
         self.fname = self.fpath.stem
         self.parse : list[Parsed_class, Parsed_function] = []
         self.file_data = []
+        self.intro = ""
         self.parse_source()
         if self.auto :
             MarkdownGenerator(self.parse, self.intro, self.fname)
 
         
-
 
     def get_parse(self): 
          return self.parse

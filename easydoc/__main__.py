@@ -2,6 +2,12 @@ import sys
 from .analyser import Parser
 import pathlib
 
+from importlib.metadata import version
+
+if "--version" == sys.argv[1]:
+    print("PyEasyDoc", version("PyEasyDoc"))
+    exit(0)
+
 types = ["file", "dir"]
 
 if sys.argv[1] not in types : 

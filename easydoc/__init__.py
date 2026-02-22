@@ -1,8 +1,8 @@
 from .objects import *
-from .generator import Generator
+from .generator import MarkdownGenerator
 from .analyser import Parser
 
 __all__ = [
-    "Generator",
+    "MarkdownGenerator",
     "Parser"
            ]
