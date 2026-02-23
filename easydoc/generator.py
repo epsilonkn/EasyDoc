@@ -1,24 +1,43 @@
 #-----------------------------------------------------------------------------------------
 # Fichier : analyser.py
-# Version : 1.1
+# Version : 1.2
 # Dernier changement : 21/02/2026                         
 # dernier éditeur : Ywan GERARD
 # Créateur : Ywan GERARD
 #
 #-----------------------------------------------------------------------------------------
 
-from pathlib import Path
-from .objects import Parsed_class, Parsed_function
+import json
+import re
+
+from .objects import Parsed_class, Parsed_function, Custom_comment
 import os
 from importlib.resources import files
 
 
 class MarkdownGenerator:
 
-    def __init__(self, obj_list, intro, fname):
+    def __init__(self, obj_list, custom_list : list[Custom_comment], fname):
         body : str = self.open_pattern()
-        body = body.replace("%intro%", intro)
-        body = body.replace("%nom_module%", fname)
+        customs = self.open_custom_config()
+        custom_done = []
+        for elt in custom_list :
+            if elt.type_ in custom_done:
+                continue
+            elif elt.is_list :
+                part = self.generate_custom_list(custom_list, elt.type_)
+                body = body.replace(elt.ref, part)
+                custom_done.append(elt.type_)
+            else :
+                body = body.replace(elt.ref, f"{self._custom_header_wrap(elt.type_.replace("_"," "))}{elt.content}\n\\")
+
+                custom_done.append(elt.type_)
+        
+        for elt in customs :
+            if customs[elt]["type"] not in custom_done :
+                print(customs[elt]["ref"])
+                body = body.replace(f"{customs[elt]["ref"]}\n", "")
+
         for elt in obj_list :
             if isinstance(elt, Parsed_class):
                 body += self.generate_class(elt)
@@ -26,6 +45,8 @@ class MarkdownGenerator:
         for elt in obj_list :
             if isinstance(elt, Parsed_function):
                 body += self.generate_function(elt)
+
+        body = re.sub(r"\\\n[^a-zA-Z]*\n", "\n", body)
 
         self.create_file(fname, body)
 
@@ -45,6 +66,12 @@ class MarkdownGenerator:
     @staticmethod
     def _main_name_wrap(name) : 
         return f"\n### Fonction {name} :\n"
+    @staticmethod
+    def _custom_list_wrap(name) : 
+        return f"\n### {name} :\n"
+    @staticmethod
+    def _custom_header_wrap(name) : 
+        return f"**{name}**\n"
     
 
     # --------------- hook functions ------------------
@@ -77,7 +104,13 @@ class MarkdownGenerator:
     @staticmethod
     def open_pattern():
         return files("easydoc.templates").joinpath("template.md").read_text()
-        
+    
+
+    @staticmethod
+    def open_custom_config() -> dict:
+        with open(files("easydoc.config").joinpath("custom_comment_lines.json"), 'r', encoding='utf-8') as f :
+            return json.load(f)
+    
     
     @staticmethod
     def create_file(name, body):
@@ -86,6 +119,15 @@ class MarkdownGenerator:
         
 
     # --------------- generation functions ------------------
+
+
+    def generate_custom_list(self, customs : list[Custom_comment], type_):
+        md = self._custom_list_wrap(type_)
+        elem_list = [cust for cust in customs if cust.type_ == type_]
+        for elem in elem_list:
+            md += elem.content + "\n\\\n"
+        return md
+    
 
 
     def generate_class(self, classe : Parsed_class):

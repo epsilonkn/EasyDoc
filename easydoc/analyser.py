@@ -1,3 +1,4 @@
+#/file_intro
 """
 Module d'analyse d'un fichier source python
 contient les classes de données ainsi que la classe Analyse qui se charge du parsing
@@ -8,17 +9,19 @@ Raises:
 """
 
 #-----------------------------------------------------------------------------------------
-# Fichier : analyser.py
-# Version : 1.1
-# Dernier changement : 20/02/2026                         
-# dernier éditeur : Ywan GERARD
-# Créateur : Ywan GERARD
+#/Fichier : analyser.py
+#/actual_version : 1.1.3
+#/last_release_date : 20/02/2026                         
+#/dernier éditeur : Ywan GERARD
+#/author : Ywan GERARD
 #
 #-----------------------------------------------------------------------------------------
 
-# ajout du choix du parsing d'un dossier
-# ajout de commandes spéciales (version, updates, métadonnées d'un fichier)
+#/TODO ajout du choix du parsing d'un dossier
+#/TODO ajout de commandes spéciales (version, updates, métadonnées d'un fichier)
 
+from importlib.resources import files
+import json
 from pathlib import Path
 import re
 import sys
@@ -49,20 +52,17 @@ class Parser:
         self.fpath = Path(path)
         self.fname = self.fpath.stem
         self.parse : list[Parsed_class, Parsed_function] = []
-        self.file_data = []
-        self.intro = ""
+        self.customs : dict = self.open_custom_config()
+        self.file_data : list[Custom_comment] = []
+        self.pointer = 0
         self.parse_source()
         if self.auto :
-            MarkdownGenerator(self.parse, self.intro, self.fname)
+            MarkdownGenerator(self.parse, self.file_data, self.fname)
 
         
 
     def get_parse(self): 
          return self.parse
-    
-    def get_intro(self):
-        return self.intro
-
 
 
     def parse_source(self):
@@ -72,28 +72,55 @@ class Parser:
         ce docstring indépendant est interprété comme une explication du fichier source
         """
         source : list[str]= self.get_source()
-        pointer = 0
         print("classes and functions found :")
-        while pointer < len(source):
-            if self.is_oneline_docstring(source[pointer]) : 
-                self.intro = source[pointer].replace('"""', "")
-                pointer +=1
+        while  self.pointer < len(source):
+            if self.is_class(source[ self.pointer]): 
+                print(source[ self.pointer])
+                self.pointer += self.class_parser(source[ self.pointer:])
 
-            elif self.is_docstring(source[pointer]) : 
-                self.intro += source[pointer].replace('"""', "")
-                pointer +=1
-                while not self.is_docstring(source[pointer]):
-                    self.intro += source[pointer].replace('"""', "")
-                    pointer +=1
-                pointer +=1
-            elif self.is_class(source[pointer]): 
-                print(source[pointer]) # délencher le parseur de classes
-                pointer += self.class_parser(source[pointer:])
-            elif self.is_function(source[pointer:]): 
-                print(source[pointer]) # délencher le parseur de fonction
-                pointer += self.function_parser(source[pointer:])
+            elif self.is_function(source[ self.pointer:]): 
+                print(source[ self.pointer])
+                self.pointer += self.function_parser(source[ self.pointer:])
+
+            elif custom:=self.is_custom(source[ self.pointer]) :
+                self.pointer += self.parse_custom(custom, source[self.pointer:])
+
             else :
+                self.pointer += 1
+
+    
+    def is_custom(self, line : str) -> bool:
+        for custom in self.customs:
+            if custom in line :
+                return custom
+        return False
+    
+
+    def parse_custom(self, custom : str, lines : list[str]):
+        pointer = 0
+        content = ""
+        match custom :
+            case "#/file_intro" :
                 pointer += 1
+                if self.is_oneline_docstring(lines[pointer]) : 
+
+                    content = self.format_string(lines[pointer].replace('"""', ""))
+                    pointer +=1
+
+                elif self.is_docstring(lines[pointer]) : 
+                    content = self.format_string(lines[pointer].replace('"""', ""))
+                    pointer +=1
+                    while not self.is_docstring(lines[pointer]):
+                        content += self.format_string(lines[pointer].replace('"""', "")).replace("\t", "")
+                        pointer +=1
+                    pointer +=1
+                    
+            case _ :
+                content = lines[pointer].replace(custom, "").replace("\n", "")
+                pointer += 1
+        obj = Custom_comment(self.customs[custom]["type"], self.customs[custom]["ref"], self.customs[custom]["is_list"], content )
+        self.file_data.append(obj)
+        return pointer
 
 
     def is_class(self, line: str) -> bool:
@@ -142,12 +169,12 @@ class Parser:
             if opened == 0:
                 return True
             if not opened and pointer >= len(lines):
-                raise IndexError(f"a parenthesis was openedbut never closed on line \n {lines[0]}\nFailed to parse the module")
+                raise IndexError(f"a parenthesis was opened but never closed on line \n {lines[0]}\nFailed to parse the module")
         else :
             return False
 
 
-    def get_function_declaration(self, lines : list[str]) -> str:
+    def get_function_declaration(self, lines : list[str]) -> tuple[str, int]:
         """
         Récupère la déclaration de la fonction et la retoure
         ex : 
@@ -303,7 +330,14 @@ class Parser:
         Returns:
             str: retourne la chaine traité selon l'algorithme défini plus haut
         """
-        return re.sub(r"\t{3,}", "\t\t", string)  if "\t" in string else "\t" + string
+        string = re.sub("\s{4}", "\t", string)
+        if "\t" in string :
+            nb_tab : str = "\t" * string.count("\t")
+
+            string = string.replace(nb_tab, "\t")
+        else :
+            string = "\t" + string
+        return string
 
 
     def get_source(self) -> list[str]:
@@ -315,7 +349,13 @@ class Parser:
         """
         with open(self.fpath, 'r', encoding='utf-8') as f:
             return f.readlines()
-        
+
+
+    @staticmethod
+    def open_custom_config() -> dict:
+        with open(files("easydoc.config").joinpath("custom_comment_lines.json"), 'r', encoding='utf-8') as f :
+            return json.load(f)
+    
 
 if __name__ == "__main__" :
     if len(sys.argv) >= 2 :

@@ -1,9 +1,10 @@
 {
-    "#/actual_version" : "%version%",
-    "#/author" : "%author%",
-    "#/creation_date" : "%creation_date%",
-    "#/last_release_date" : "%last_release_date%",
-    "#/TODO" : "%last_release_date%",
-    "#/planned" : "%roadmap%",
-    "#/file_intro" : "%intro%"
+    "#/actual_version" : {"ref" : "%version%", "type" : "Version", "is_list" : false},
+    "#/author" : {"ref" : "%author%", "type" : "Author", "is_list" : false},
+    "#/creation_date" : {"ref" : "%creation_date%", "type" : "Creation_date", "is_list" : false},
+    "#/last_release_date" : {"ref" : "%last_release_date%", "type" : "Last_release_date", "is_list" : false},
+    "#/TODO" : {"ref" : "%TODO%", "type" : "TODO", "is_list" : true},
+    "#/planned" : {"ref" : "%roadmap%", "type" : "Roadmap", "is_list" : true},
+    "#/file_intro" : {"ref" : "%intro%", "type" : "Sum-up", "is_list" : false},
+    "#/const" : {"ref" : "%const%", "type" : "Constants", "is_list" : true}
 }

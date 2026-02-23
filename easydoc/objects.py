@@ -16,10 +16,11 @@ class Parsed_function:
 
 class Custom_comment:
 
-    def __init__(self, declaration, docstring):
-        self.type_ : str = ""
-        self.ref : str = ""
-        self.content : str = docstring
+    def __init__(self, type_, ref, is_list, content):
+        self.type_ : str = type_
+        self.ref : str = ref
+        self.is_list : bool = is_list
+        self.content : str = content
 
 
 
