@@ -8,7 +8,11 @@ For more information, read the wiki : https://github.com/epsilonkn/EasyDoc/wiki
 
 ## To use it : 
 
-### Command Line :
+### To comment your code :
+
+Soon....
+
+### Building the doc in a terminal :
 
 Here is the only way implemented to generate a documentation in command line :
 
@@ -18,7 +22,7 @@ Note 1 : your terminal must be in the directory where you want to see the docume
 
 Note 2 : you can pass the path without double quotes, however it is better to keep them if your path got spaces in it.
 
-### in a python program
+### Building the doc in a python program :
 
 Disclaimer : Running the module in a program by calling directly the classes can be possible, but this might also opens a pandora box of bugs.
 
