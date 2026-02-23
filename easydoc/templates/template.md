@@ -1,15 +1,20 @@
-# %nom_module%
+# %module_name%
 
-# Présentation
+## Introduction
 
 %version%
-\
 %author%
-\
+%creation_date%
 %last_release_date%
 
 %intro%
 
-## Utilisation
+%roadmap%
 
-## Détail des classes et fonctions
+%TODO%
+
+## Uses
+
+## Technical details
+
+%const%
