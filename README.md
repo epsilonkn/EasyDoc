@@ -49,6 +49,4 @@ If you still wish to do it in a program rather than in command line, here is the
 
 ## API :
 
-The API is still very small, for now, you can just generate manually the documentation.
-\
-You can also access the class attribute "markdown" which is the base used for the generation.
+For now there is no released API entry points in the module, you'll have to wait for the V1.3 and V1.5 for these parts
