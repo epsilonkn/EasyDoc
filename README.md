@@ -4,6 +4,8 @@
 
 The idea of that package is to create a technical documentation of a python source file, from the docstrings and the commentary in the source code : yes, the more you comment your code, the more the module will scrap.
 
+For more information, read the wiki : https://github.com/epsilonkn/EasyDoc/wiki
+
 ## To use it : 
 
 ### Command Line :
