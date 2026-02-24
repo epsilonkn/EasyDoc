@@ -21,6 +21,7 @@ class MarkdownGenerator:
         body : str = self.open_pattern()
         customs = self.open_custom_config()
         custom_done = []
+        body = body.replace("%module_name%", fname)
         for elt in custom_list :
             if elt.type_ in custom_done:
                 continue

@@ -6,6 +6,16 @@ The idea of that package is to create a technical documentation of a python sour
 
 For more information, read the wiki : https://github.com/epsilonkn/EasyDoc/wiki
 
+## Getting Started :
+
+**Using pip :**
+
+    pip install EasyDocPy
+
+**On github :**
+\
+Read the wiki of the module
+
 ## To use it : 
 
 ### To comment your code :

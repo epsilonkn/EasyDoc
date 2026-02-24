@@ -1,13 +1,13 @@
-# %nom_module%
+# %module_name%
 
-# PrÃ©sentation
+## Introduction
 
 **Version**
  : 1.1.3
-
+\
 **Author**
  : Ywan GERARD
-
+\
 **Last release date**
  : 20/02/2026                         
 
@@ -21,9 +21,16 @@ IndexError: raise IndexError si la classe Analyse détecte une parenthèse non f
 empêchant la détection de la fin d'une fonction
 
 
-## Utilisation
+### TODO :
+ ajout du choix du parsing d'un dossier
+\
+ ajout de commandes spéciales (version, updates, métadonnées d'un fichier)
 
-## DÃ©tail des classes et fonctions
+## Uses
+
+## Technical details
+
+
 ### Classe Parser :
 ---
 

@@ -8,17 +8,11 @@ Raises:
     empêchant la détection de la fin d'une fonction
 """
 
-#-----------------------------------------------------------------------------------------
-#/Fichier : analyser.py
-#/actual_version : 1.1.3
-#/last_release_date : 20/02/2026                         
-#/dernier éditeur : Ywan GERARD
-#/author : Ywan GERARD
-#
-#-----------------------------------------------------------------------------------------
 
-#/TODO ajout du choix du parsing d'un dossier
-#/TODO ajout de commandes spéciales (version, updates, métadonnées d'un fichier)
+#/actual_version : 1.2.0
+#/last_release_date : 20/02/2026                         
+#/author : Ywan GERARD
+
 
 from importlib.resources import files
 import json
