@@ -1,6 +1,6 @@
 [project]
 name = "EasyDocPy"
-version = "1.2.0"
+version = "1.2.1"
 description = "python documentation generator"
 dependencies = []
 authors = [{ name="epsilonkn" }]

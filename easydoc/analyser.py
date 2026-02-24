@@ -324,7 +324,7 @@ class Parser:
         Returns:
             str: retourne la chaine traité selon l'algorithme défini plus haut
         """
-        string = re.sub("\s{4}", "\t", string)
+        string = re.sub(r"\s{4}", "\t", string)
         if "\t" in string :
             nb_tab : str = "\t" * string.count("\t")
 
