@@ -9,8 +9,8 @@ Raises:
 """
 
 
-#/actual_version : 1.2.0
-#/last_release_date : 20/02/2026                         
+#/actual_version : 1.2.2
+#/last_release_date : 25/02/2026                         
 #/author : Ywan GERARD
 
 
@@ -199,7 +199,7 @@ class Parser:
             opened += lines[pointer].count("(") - lines[pointer].count(")")
             decla += lines[pointer]
         if opened == 0:
-            return self.format_string(decla), pointer + 1
+            return decla, pointer + 1
         if not opened and pointer >= len(lines):
             raise IndexError(f"a parenthesis was opened but never closed on line \n {lines[0]}\nFailed to parse the module")
 
