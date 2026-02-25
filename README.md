@@ -158,21 +158,7 @@ Note 2 : you can pass the path without double quotes, however it is better to ke
 
 ### In a python program :
 
-Disclaimer : Running the module in a program by calling directly the classes can be possible, but this might also opens a pandora box of bugs.
-
-The reason you would need to run the module manually in a python file is to get a better control over the process.
-Unfortunately, in the actual state of the module, the control over the module is still very little, this will be improved in the next updates.
-
-If you still wish to do it in a program rather than in command line, here is the base :
-
-    From easydoc import Parser, MarkdownGenerator
-
-    parser = Parser(path = "/path/to/file.py", automatic = False)
-    parse_list = parser.get_parse()
-    file_header = parser.get_intro()
-
-    MarkdownGenerator(parse_list, file_header, doc_file_name)
-
+Not implemented yet, you'll have to wait for the V1.3.0
 
 
 ## Next updates :
