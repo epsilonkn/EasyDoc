@@ -158,7 +158,7 @@ Note 2 : you can pass the path without double quotes, however it is better to ke
 
 ### In a python program :
 
-Not implemented yet, you'll have to wait for the V1.3.0
+Not implemented yet.
 
 
 ## Next updates :
@@ -168,9 +168,10 @@ Not implemented yet, you'll have to wait for the V1.3.0
 |V 1.2.0 | adding custom comment line to add info to the documentation|
 |V 1.3.0| better control over the process when done in a program |
 |V 1.4.0| adding doc generation for an entire directory |
-|V 1.5.0| adding user configuration |
+|V 1.5.0| generating the doc as a html file |
+|V 1.?.0| adding user configuration |
 |......||
 
 ## API :
 
-For now there is no released API entry points in the module, you'll have to wait for the V1.3 and V1.5 for these parts
+For now there is no released API entry points in the module, you'll have to wait for the V1.3 for the first adds

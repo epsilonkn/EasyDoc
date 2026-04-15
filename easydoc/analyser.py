@@ -53,10 +53,6 @@ class Parser:
         if self.auto :
             MarkdownGenerator(self.parse, self.file_data, self.fname)
 
-        
-
-    def get_parse(self): 
-         return self.parse
 
 
     def parse_source(self):
