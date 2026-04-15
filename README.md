@@ -165,11 +165,12 @@ Not implemented yet.
 
 |Version | Improvement|
 |-|-|
-|V 1.2.0 | adding custom comment line to add info to the documentation|
-|V 1.3.0| better control over the process when done in a program |
-|V 1.4.0| adding doc generation for an entire directory |
-|V 1.5.0| generating the doc as a html file |
-|V 1.?.0| adding user configuration |
+|V 1.2.0 | Adding custom comment line to add info to the documentation| Done |
+|V 1.3.0| Better control over the process when done in a program | Working on it... |
+|V 1.4.0| Adding doc generation for an entire directory | |
+|V 1.5.0| Generating the doc as a html file | |
+|V 1.6.0| Translation in differents languages | |
+|V 1.?.0| Adding user configuration | |
 |......||
 
 ## API :
