@@ -2,8 +2,8 @@ from argparse import ArgumentParser
 from importlib.metadata import version
 import pathlib
 
-from .main_manager.FileParser import Parser
-from .classes.exceptions import NotDeveloppedError
+from .main_manager import Parser
+from .classes import NotDeveloppedError
 
 
 parser = ArgumentParser()

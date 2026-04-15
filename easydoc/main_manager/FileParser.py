@@ -19,8 +19,8 @@ import json
 from pathlib import Path
 import re
 import sys
-from ..classes.objects import *
-from ..generators.MarkdownGenerator import MarkdownGenerator
+from ..classes import Parsed_class, Parsed_function, Custom_comment
+from ..generators import MarkdownGenerator
 
 
 

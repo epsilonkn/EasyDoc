@@ -10,7 +10,7 @@
 import json
 import re
 
-from ..classes.objects import Parsed_class, Parsed_function, Custom_comment
+from ..classes import Parsed_class, Parsed_function, Custom_comment
 import os
 from importlib.resources import files
 
