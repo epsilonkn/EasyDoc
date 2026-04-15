@@ -163,8 +163,8 @@ Not implemented yet.
 
 ## Next updates :
 
-|Version | Improvement|
-|-|-|
+|Version | Improvement| Status|
+|-|-|-|
 |V 1.2.0 | Adding custom comment line to add info to the documentation| Done |
 |V 1.3.0| Better control over the process when done in a program | Working on it... |
 |V 1.4.0| Adding doc generation for an entire directory | |
