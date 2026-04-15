@@ -1,0 +1,2 @@
+class HTMLGenerator:
+    pass

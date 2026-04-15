@@ -1,5 +1,5 @@
-from objects import *
-from exceptions import *
+from .objects import *
+from .exceptions import *
 
 __all__ = [
 "Parsed_class", 

@@ -17,7 +17,7 @@ from importlib.resources import files
 
 class MarkdownGenerator:
 
-    def __init__(self, obj_list, custom_list : list[Custom_comment], fname):
+    def __init__(self, obj_list : list[Parsed_class, Parsed_function], custom_list : list[Custom_comment], fname : str):
         body : str = self.open_pattern()
         customs = self.open_custom_config()
         custom_done = []

@@ -54,6 +54,26 @@ class Parser:
             MarkdownGenerator(self.parse, self.file_data, self.fname)
 
 
+    def get_parse(self) -> list[Parsed_class, Parsed_function]:
+        """
+        retourne la liste des classes et fonctions scrappées
+
+        Returns:
+            list[Parsed_class, Parsed_function]: retourne la liste des classes et fonctions scrappées
+        """
+        return self.parse
+    
+
+    def get_file_data(self) -> list[Custom_comment]:
+        """
+        retourne la liste des commentaires personnalisés scrappés
+
+        Returns:
+            list[Custom_comment]: retourne la liste des commentaires personnalisés scrappés
+        """
+        return self.file_data
+
+
 
     def parse_source(self):
         """

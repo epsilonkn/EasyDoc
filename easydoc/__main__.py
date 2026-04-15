@@ -2,8 +2,9 @@ from argparse import ArgumentParser
 from importlib.metadata import version
 import pathlib
 
-from .main_manager import Parser
 from .classes import NotDeveloppedError
+
+from .main_manager import TreatmentManager
 
 
 parser = ArgumentParser()
@@ -30,19 +31,19 @@ if args.version:
     print("EasyDocPy", version("EasyDocPy"))
     exit(0)
 
+def is_valid_path(path: str) -> bool:
+    """Check if the given path is valid and points to a python file or a directory"""
+    path = pathlib.Path(path)
+    return path.exists() and ((path.is_file() and path.suffix == ".py") or path.is_dir())
 
-path = pathlib.Path(args.path)
 
-if not path.exists() : 
-    raise ValueError(f"Invalid path: The path {args.path} doesn't exists")
 
 match args.type :
-
-    case "file":
-        if path.suffix != ".py" : 
+    case "file" | "dir":
+        if not is_valid_path(args.path): 
             raise ValueError(f"Invalid path: The path {args.path} doesn't point to a python file")
-        Parser(path)
-    case "dir":
-        raise NotDeveloppedError("the directory documentation mode hasn't been developped yet.")
+        TreatmentManager(args.path, args.type, args.format)
+    case "context":
+        raise NotDeveloppedError("the context documentation mode hasn't been developped yet.")
     case _ :
         raise ValueError("Invalid value for -type. The type of document to treat must be either 'file' or 'dir'")
