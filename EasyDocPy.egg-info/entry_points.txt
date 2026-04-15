@@ -1,0 +1,2 @@
+[console_scripts]
+easydoc = easydoc.cli:main
