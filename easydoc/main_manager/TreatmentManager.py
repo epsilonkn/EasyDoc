@@ -1,0 +1,2 @@
+class TreatmentManager:
+    pass

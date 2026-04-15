@@ -166,8 +166,8 @@ Not implemented yet.
 |Version | Improvement| Status|
 |-|-|-|
 |V 1.2.0 | Adding custom comment line to add info to the documentation| Done |
-|V 1.3.0| Better control over the process when done in a program | Working on it... |
-|V 1.4.0| Adding doc generation for an entire directory | |
+|V 1.3.0| Better control over the process when done in a program | suppressed from the planning |
+|V 1.4.0| Adding doc generation for an entire directory | working on it...|
 |V 1.5.0| Generating the doc as a html file | |
 |V 1.6.0| Translation in differents languages | |
 |V 1.?.0| Adding user configuration | |
