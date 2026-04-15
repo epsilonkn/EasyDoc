@@ -4,7 +4,7 @@ import pathlib
 
 from .classes import NotDeveloppedError
 
-from .main_manager import TreatmentManager
+from .main_manager import TreatmentManager, ContextManager
 
 
 parser = ArgumentParser()
@@ -12,8 +12,8 @@ parser.add_argument("-v", "--version",
                     action="store_true", 
                     help="show the version of EasyDocPy and exit")
 parser.add_argument("-type", 
-                    choices=["file", "dir"], 
-                    help="the type of document to treat, either a single file or a whole directory")
+                    choices=["file", "dir", "interactive"], 
+                    help="the type of document to treat, either a single file or a whole directory, interactive mode allows to set the arguments interactively")
 parser.add_argument("-path", 
                     help="the path to the file or directory to document")
 parser.add_argument("-f", "--format", 
@@ -43,7 +43,9 @@ match args.type :
         if not is_valid_path(args.path): 
             raise ValueError(f"Invalid path: The path {args.path} doesn't point to a python file")
         TreatmentManager(args.path, args.type, args.format)
-    case "context":
-        raise NotDeveloppedError("the context documentation mode hasn't been developped yet.")
+    case "interactive":
+        args = ContextManager.run(TreatmentManager.get_default_args())
+        TreatmentManager(**args)
     case _ :
+        print(args.type)
         raise ValueError("Invalid value for -type. The type of document to treat must be either 'file' or 'dir'")

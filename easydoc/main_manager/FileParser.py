@@ -19,8 +19,7 @@ import json
 from pathlib import Path
 import re
 import sys
-from ..classes import Parsed_class, Parsed_function, Custom_comment
-from ..generators import MarkdownGenerator
+from easydoc.classes import Parsed_class, Parsed_function, Custom_comment
 
 
 
@@ -50,8 +49,6 @@ class Parser:
         self.file_data : list[Custom_comment] = []
         self.pointer = 0
         self.parse_source()
-        if self.auto :
-            MarkdownGenerator(self.parse, self.file_data, self.fname)
 
 
     def get_parse(self) -> list[Parsed_class, Parsed_function]:
