@@ -32,7 +32,6 @@ class ContextManager:
                 case "help":
                     print("Available options :" )
                     print("\t- run : start the documentation generation with the current arguments")
-                    print("\t- type : type of document to treat, either 'file' or 'dir', usage : type = <type>")
                     print("\t- format : type of documentation to generate, either 'md' or 'html', usage : format = <format>")
                     print("\t- language : language of the documentation to generate, either 'fr', 'en' or 'jp', usage : language = <language>")
                     print(default_args["type"])

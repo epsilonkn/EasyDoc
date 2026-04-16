@@ -15,41 +15,20 @@ import os
 from importlib.resources import files
 
 
-class MarkdownGenerator:
+class MdGenerator:
 
-    def __init__(self, obj_list : list[Parsed_class, Parsed_function], custom_list : list[Custom_comment], fname : str):
-        body : str = self.open_pattern()
-        customs = self.open_custom_config()
-        custom_done = []
-        body = body.replace("%module_name%", fname)
-        for elt in custom_list :
-            if elt.type_ in custom_done:
-                continue
-            elif elt.is_list :
-                part = self.generate_custom_list(custom_list, elt.type_)
-                body = body.replace(elt.ref, part)
-                custom_done.append(elt.type_)
-            else :
-                body = body.replace(elt.ref, f"{self._custom_header_wrap(elt.type_.replace("_"," "))}{elt.content}\n\\")
+    def __init__(self, 
+                 debug : bool = False):
 
-                custom_done.append(elt.type_)
-        
-        for elt in customs :
-            if customs[elt]["type"] not in custom_done :
-                print(customs[elt]["ref"])
-                body = body.replace(f"{customs[elt]["ref"]}\n", "")
+        self.debug = debug
+        if self.debug:
+            print(f"[DEBUG] [DirMdGenerator] Opening the template file and the custom comment configuration")
+        self.body : str = self.open_pattern()
+        self.customs = self.open_custom_config()
+        if self.debug:
+            print(f"[DEBUG] [DirMdGenerator] Done")
+        self.custom_done = []
 
-        for elt in obj_list :
-            if isinstance(elt, Parsed_class):
-                body += self.generate_class(elt)
-
-        for elt in obj_list :
-            if isinstance(elt, Parsed_function):
-                body += self.generate_function(elt)
-
-        body = re.sub(r"\\\n[^a-zA-Z]*\n", "\n", body)
-
-        self.create_file(fname, body)
 
 
     # --------------- default wrapper functions ------------------
@@ -65,39 +44,15 @@ class MarkdownGenerator:
     def _function_wrap(name) : 
         return f"\n### Fonction {name} :\n"
     @staticmethod
-    def _main_name_wrap(name) : 
-        return f"\n### Fonction {name} :\n"
-    @staticmethod
     def _custom_list_wrap(name) : 
         return f"\n### {name} :\n"
     @staticmethod
     def _custom_header_wrap(name) : 
         return f"**{name}**\n"
+    @staticmethod
+    def _file_wrap(name) : 
+        return f"\n## Fichier {name} :\n---\n"
     
-
-    # --------------- hook functions ------------------
-
-
-    @classmethod
-    def set_class_wrap(cls, wrapper) : 
-        cls._class_wrap = wrapper
-        return wrapper
-    
-    @classmethod
-    def set_method_wrap(cls, wrapper) : 
-        cls._method_wrap = wrapper
-        return wrapper
-    
-    @classmethod
-    def set_function_wrap(cls, wrapper) : 
-        cls._function_wrap = wrapper
-        return wrapper
-    
-    @classmethod
-    def set_main_name_wrap(cls, wrapper) : 
-        cls._main_name_wrap = wrapper
-        return wrapper
-
 
     # --------------- files related functions ------------------
 
@@ -130,12 +85,15 @@ class MarkdownGenerator:
         return md
     
 
-
     def generate_class(self, classe : Parsed_class):
+        if self.debug:
+            print(f"[DEBUG] [DirMdGenerator] Generating documentation for the class {classe.name}")
         subbody = self._class_wrap(classe.name)
         subbody += f"\nDéclaration :\n\n\t{classe.declaration}"
         subbody += f"\nDescription :\n{classe.docstring}"
         for func in classe.methods:
+            if self.debug:
+                print(f"[DEBUG] [DirMdGenerator] Generating documentation for the method {classe.name}.{func.name}")
             subbody += self.generate_function(func, True)
 
         return subbody
@@ -145,6 +103,8 @@ class MarkdownGenerator:
         if in_class :
             subbody = self._method_wrap(func.name)
         else : 
+            if self.debug:
+                print(f"[DEBUG] [DirMdGenerator] Generating documentation for the function {func.name}")
             subbody = self._function_wrap(func.name)
 
         
@@ -153,3 +113,99 @@ class MarkdownGenerator:
             subbody += f"\nDescription :\n\n{func.docstring}"
 
         return subbody
+
+
+
+class OneFileMdGenerator(MdGenerator):
+
+    def __init__(self, obj_list : list[Parsed_class, Parsed_function], custom_list : list[Custom_comment], fname : str, debug : bool = False):
+
+        super().__init__(debug)
+        
+        self.body = self.body.replace("%module_name%", fname)
+        for elt in custom_list :
+            if elt.type_ in self.custom_done:
+                continue
+            elif elt.is_list :
+                part = self.generate_custom_list(custom_list, elt.type_)
+                self.body = self.body.replace(elt.ref, part)
+                self.custom_done.append(elt.type_)
+            else :
+                self.body = self.body.replace(elt.ref, f"{self._custom_header_wrap(elt.type_.replace("_"," "))}{elt.content}\n\\")
+
+                self.custom_done.append(elt.type_)
+        
+        for elt in self.customs :
+            if self.customs[elt]["type"] not in self.custom_done :
+                print(self.customs[elt]["ref"])
+                self.body = self.body.replace(f"{self.customs[elt]["ref"]}\n", "")
+
+        for elt in obj_list :
+            if isinstance(elt, Parsed_class):
+                self.body += self.generate_class(elt)
+
+        for elt in obj_list :
+            if isinstance(elt, Parsed_function):
+                self.body += self.generate_function(elt)
+
+        self.body = re.sub(r"\\\n[^a-zA-Z]*\n", "\n", self.body)
+
+        self.create_file(fname, self.body)
+
+
+
+class DirMdGenerator(MdGenerator):
+
+    def __init__(self, 
+                 obj_list : list[list[Parsed_class, Parsed_function]], 
+                 custom_list : list[list[Custom_comment]], 
+                 fname_list : list[str], 
+                 dirname : str, 
+                 debug : bool = False):
+
+        super().__init__(debug)
+
+        self.body = self.body.replace("%module_name%", dirname)
+        self.header_written = False
+
+        if len(fname_list) != len(obj_list) :
+            raise ValueError("The number of files and the number of parsed objects must be the same")
+        for i in range(len(fname_list)) :
+            if fname_list[i] in ["main.py", "__init__.py" ] and not self.header_written:
+                if self.debug:
+                    print(f"[DEBUG] [DirMdGenerator] Found a main file : {fname_list[i]}, writing the header of the documentation with this file")
+                self.header_written = True
+                for elt in custom_list :
+                    if elt.type_ in self.custom_done:
+                        continue
+                    elif elt.is_list :
+                        part = self.generate_custom_list(custom_list, elt.type_)
+                        self.body = self.body.replace(elt.ref, part)
+                        self.custom_done.append(elt.type_)
+                    else :
+                        self.body = self.body.replace(elt.ref, f"{self._custom_header_wrap(elt.type_.replace("_"," "))}{elt.content}\n\\")
+
+                        self.custom_done.append(elt.type_)
+                
+                for elt in self.customs :
+                    temp : list[str] = []
+                    if self.customs[elt]["type"] not in self.custom_done :
+                        temp.append(self.customs[elt]["ref"])
+                        self.body = self.body.replace(f"{self.customs[elt]["ref"]}\n", "")
+                    if self.debug and temp :
+                        print("[DEBUG] [DirMdGenerator] unused customs : ", ", ".join(temp))
+
+
+            self.body += self._file_wrap(fname_list[i])
+
+            for elt in obj_list[i] :
+                if isinstance(elt, Parsed_class):
+                    self.body += self.generate_class(elt)
+
+            for elt in obj_list[i] :
+                if isinstance(elt, Parsed_function):
+                    self.body += self.generate_function(elt)
+
+        self.body = re.sub(r"\\\n[^a-zA-Z]*\n", "\n", self.body)
+
+        self.create_file(dirname, self.body)

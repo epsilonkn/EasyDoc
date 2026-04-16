@@ -1,4 +1,4 @@
 from .HTMLGenerator import HTMLGenerator
-from .MarkdownGenerator import MarkdownGenerator
+from .MarkdownGenerator import OneFileMdGenerator, DirMdGenerator
 
-__all__ = ["HTMLGenerator", "MarkdownGenerator"]
+__all__ = ["HTMLGenerator", "OneFileMdGenerator", "DirMdGenerator"]

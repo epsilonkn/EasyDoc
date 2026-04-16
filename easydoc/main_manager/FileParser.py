@@ -29,7 +29,7 @@ class Parser:
     et identifie les docstrings présents pour chaque classe et fonction
     """
 
-    def __init__(self, path, automatic : bool = True):
+    def __init__(self, path, debug=False) -> None:
         """
         initialise les attributs de la classe :
         -fpath contient le chemin vers le fichier source
@@ -39,9 +39,8 @@ class Parser:
 
         Args:
             path (str): chemin vers le fichier source.
-            automatic (bool): chemin vers le fichier source.
         """
-        self.auto = automatic
+        self.debug = debug
         self.fpath = Path(path)
         self.fname = self.fpath.stem
         self.parse : list[Parsed_class, Parsed_function] = []
@@ -79,15 +78,19 @@ class Parser:
         ce docstring indépendant est interprété comme une explication du fichier source
         """
         source : list[str]= self.get_source()
-        print("classes and functions found :")
+        if self.debug:
+            print(f"[DEBUG] [Parser] Starting to parse the file : {self.fpath}")
         while  self.pointer < len(source):
-            if self.is_class(source[ self.pointer]): 
-                print(source[ self.pointer])
-                self.pointer += self.class_parser(source[ self.pointer:])
 
-            elif self.is_function(source[ self.pointer:]): 
-                print(source[ self.pointer])
-                self.pointer += self.function_parser(source[ self.pointer:])
+            if self.is_class(source[self.pointer]): 
+                if self.debug:
+                    print(f"[DEBUG] [Parser] Found a class declaration at line {self.pointer} : {source[self.pointer]}")
+                self.pointer += self.class_parser(source[self.pointer:])
+ 
+            elif self.is_function(source[self.pointer:]): 
+                if self.debug:
+                    print(f"[DEBUG] [Parser] Found a function declaration at line {self.pointer} : {source[self.pointer]}")
+                self.pointer += self.function_parser(source[self.pointer:])
 
             elif custom:=self.is_custom(source[ self.pointer]) :
                 self.pointer += self.parse_custom(custom, source[self.pointer:])
@@ -246,7 +249,8 @@ class Parser:
                 pointer +=1
 
             elif self.is_function(sub_source[pointer:], in_class=True) : 
-                print(sub_source[pointer])
+                if self.debug:
+                    print(f"[DEBUG] [Parser] Found a method declaration at line {pointer} : {sub_source[pointer]}")
                 pointer += self.function_parser(sub_source[pointer:], obj)
 
             else :

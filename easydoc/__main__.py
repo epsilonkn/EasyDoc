@@ -11,7 +11,8 @@ parser = ArgumentParser()
 parser.add_argument("-v", "--version", 
                     action="store_true", 
                     help="show the version of EasyDocPy and exit")
-parser.add_argument("-type", 
+parser.add_argument("type",
+                    nargs="?",
                     choices=["file", "dir", "interactive"], 
                     help="the type of document to treat, either a single file or a whole directory, interactive mode allows to set the arguments interactively")
 parser.add_argument("-path", 
@@ -23,6 +24,7 @@ parser.add_argument("-l", "--language",
                     choices=["fr", "en", "jp"],
                     help="the language of the documentation to generate")
 parser.add_argument("--debug", 
+                    default=False,
                     action="store_true",
                     help="enable debug mode")
 args = parser.parse_args()
@@ -42,10 +44,9 @@ match args.type :
     case "file" | "dir":
         if not is_valid_path(args.path): 
             raise ValueError(f"Invalid path: The path {args.path} doesn't point to a python file")
-        TreatmentManager(args.path, args.type, args.format)
+        TreatmentManager(args.path, args.type, args.format, debug = args.debug)
     case "interactive":
-        args = ContextManager.run(TreatmentManager.get_default_args())
-        TreatmentManager(**args)
+        modif_args = ContextManager.run(TreatmentManager.get_default_args())
+        TreatmentManager(**modif_args, debug=args.debug)
     case _ :
-        print(args.type)
-        raise ValueError("Invalid value for -type. The type of document to treat must be either 'file' or 'dir'")
+        raise ValueError(f"Invalid value for type : {args.type}. The type of document to treat must be either 'file' or 'dir'")

@@ -13,6 +13,10 @@ class Parsed_function:
         self.declaration = declaration
         self.name = re.search(r"^\s*(?:def|class)\s+([a-zA-Z_]\w*)", declaration).group(1)
 
+    
+    def __str__(self):
+        return self.name
+
 
 class Custom_comment:
 
@@ -41,4 +45,8 @@ class Parsed_class:
 
     def add_method(self, method : Parsed_function):
         self.methods.append(method)
+
+
+    def __str__(self):
+        return self.name
 
