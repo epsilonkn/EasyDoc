@@ -27,18 +27,18 @@ class ContextManager:
             default_args["path"] = user_answer
 
         while user_answer != "run":
-            user_answer = input("Enter 'run' to start the documentation generation, help to see the other options or 'exit' to quit :")
+            user_answer = input("Enter 'run' to start the generation, 'help' to see the other options or 'exit' to quit :")
             match user_answer :
                 case "help":
                     print("Available options :" )
-                    print("\t- run : start the documentation generation with the current arguments")
-                    print("\t- format : type of documentation to generate, either 'md' or 'html', usage : format = <format>")
-                    print("\t- language : language of the documentation to generate, either 'fr', 'en' or 'jp', usage : language = <language>")
-                    print(default_args["type"])
+                    print("\t- run          : start the documentation generation with the current arguments")
+                    print("\t- format       : type of documentation to generate, either 'md' or 'html', usage : format = <format>")
+                    print("\t- language     : language of the documentation to generate, either 'fr', 'en' or 'jp', usage : NOT IMPLEMENTED") #language = <language>
                     if default_args["type"] == "dir" :
-                        print("\t- recursive : enable or disable the recursive search for python files in the directory, usage : recursive = <y/n>")
-                        print("\t- onefile : generate a single documentation file for the whole directory instead of one file per python file, usage : onefile = <y/n>")
-                    print("\t- exit : quit the program")
+                        print("\t- recursive    : enable or disable the recursive search for python files in the directory, usage : recursive = <y/n>")
+                        print("\t- onefile      : generate a single documentation file for the whole directory instead of one file per python file, usage : onefile = <y/n>")
+                        print("\t- main         : defines the main file for the directory, usage : main = <file.py> | <subdir/file.py>")
+                    print("\t- exit         : quit the program")
                 case "run":
                     return default_args
                 case "exit":
