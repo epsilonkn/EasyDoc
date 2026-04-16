@@ -1,16 +1,20 @@
 from typing import Union
 
+
 class Node:
 
     def __init__(self, name : str, parent : Union["Node", None] = None, path : str = ""):
         self.name = name
         self.parent = parent if parent else self
         self.path = path if path else name
-        self.children = []
+        self.children : list[Union["Node", "Leaf"]] = []
+        self.root_shown = False
+
 
     def add_child(self, child):
         self.children.append(child)
 
+    @property
     def full_path(self) -> str:
         """
         return the full path of the leaf by concatenating the name of the leaf and the name of its parent nodes
@@ -20,14 +24,26 @@ class Node:
         while parent != parent.parent:
             path = parent.name + "/" + path
             parent = parent.parent
-        path = parent.name + "/" + path # includes the root node in the path
+        if self != parent : # if the leaf is not the root
+            path = parent.name + "/" + path # includes the root node in the path
         return path
     
+
     def __str__(self):
         return self.name
     
+
     def __iter__(self):
-        return iter(self.children)
+        if not self.root_shown:
+            self.root_shown = True
+            yield self
+        for child in self.children:
+            if isinstance(child, Node):
+                yield from child
+            else:
+                yield child
+        self.root_shown = False
+
     
     def __len__(self) -> int:
         """
@@ -43,7 +59,8 @@ class Node:
         returns 5 for the root node, 3 for child1 and 1 for child2
         """
         return 1 + sum(len(child) for child in self.children)
-    
+
+
     def show_tree(self, level=0):
         print("\t" * level + "- " + self.name)
         for child in self.children:
@@ -76,6 +93,7 @@ class Node:
         Returns:
             Union["Node", "Leaf"]: returns the created node or leaf
         """
+
         if isinstance(elt, str):
             if Leaf.is_py_leaf(elt):
                 elt = Leaf(elt, self)
@@ -96,6 +114,7 @@ class Leaf:
     def __init__(self, name : str, parent : Union["Node", None] = None):
         self.name = name
         self.parent = parent
+        self.associated_parse = None
 
 
     def __str__(self):
@@ -111,7 +130,8 @@ class Leaf:
         """
         if elt.endswith(".py") :
              return True
-        
+    
+    @property
     def full_path(self) -> str:
         """
         return the full path of the leaf by concatenating the name of the leaf and the name of its parent nodes
@@ -121,6 +141,6 @@ class Leaf:
         while parent != parent.parent:
             path = parent.name + "/" + path
             parent = parent.parent
-        path = parent.name + "/" + path # includes the root node in the path
+        if self != parent : # if the leaf is not the root
+            path = parent.name + "/" + path # includes the root node in the path
         return path
-        

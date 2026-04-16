@@ -1,4 +1,13 @@
+
 import re
+
+
+class Parsed_file:
+
+    def __init__(self, name : str, content_list : list["Parsed_class", "Parsed_function"], file_data : list["Custom_comment"]):
+        self.name = name
+        self.content_list = content_list
+        self.file_data = file_data
 
 class Parsed_function:
 

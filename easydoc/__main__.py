@@ -4,7 +4,7 @@ import pathlib
 
 from .classes import NotDeveloppedError
 
-from .main_manager import TreatmentManager, ContextManager
+from .main_manager import TreatmentManager, InteractiveManager
 
 
 parser = ArgumentParser()
@@ -46,7 +46,7 @@ match args.type :
             raise ValueError(f"Invalid path: The path {args.path} doesn't point to a python file")
         TreatmentManager(args.path, args.type, args.format, debug = args.debug)
     case "interactive":
-        modif_args = ContextManager.run(TreatmentManager.get_default_args())
+        modif_args = InteractiveManager.run(TreatmentManager.get_default_args())
         TreatmentManager(**modif_args, debug=args.debug)
     case _ :
         raise ValueError(f"Invalid value for type : {args.type}. The type of document to treat must be either 'file' or 'dir'")

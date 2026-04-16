@@ -1,7 +1,7 @@
 import pathlib
 
 
-class ContextManager:
+class InteractiveManager:
 
 
     @staticmethod

@@ -8,9 +8,10 @@
 #-----------------------------------------------------------------------------------------
 
 import json
+from pathlib import Path
 import re
 
-from ..classes import Parsed_class, Parsed_function, Custom_comment
+from ..classes import Parsed_class, Parsed_function, Custom_comment, Parsed_file, Leaf, Node
 import os
 from importlib.resources import files
 
@@ -157,10 +158,9 @@ class OneFileMdGenerator(MdGenerator):
 class DirMdGenerator(MdGenerator):
 
     def __init__(self, 
-                 obj_list : list[list[Parsed_class, Parsed_function]], 
-                 custom_list : list[list[Custom_comment]], 
-                 fname_list : list[str], 
+                 file_list : list[Node, Leaf], 
                  dirname : str, 
+                 main : str = None,
                  debug : bool = False):
 
         super().__init__(debug)
@@ -168,18 +168,22 @@ class DirMdGenerator(MdGenerator):
         self.body = self.body.replace("%module_name%", dirname)
         self.header_written = False
 
-        if len(fname_list) != len(obj_list) :
-            raise ValueError("The number of files and the number of parsed objects must be the same")
-        for i in range(len(fname_list)) :
-            if fname_list[i] in ["main.py", "__init__.py" ] and not self.header_written:
+        for file in file_list :
+            if isinstance(file, Node):
+                continue
+            file : Parsed_file = file.associated_parse
+            file_name = Path(file.name).name
+            if self.debug :
+                print(f"[DEBUG] [DirMdGenerator] Treating the file {file_name}")
+            if not self.header_written and (file_name == main or (file_name in ["main.py", "__init__.py" ])):
                 if self.debug:
-                    print(f"[DEBUG] [DirMdGenerator] Found a main file : {fname_list[i]}, writing the header of the documentation with this file")
+                    print(f"[DEBUG] [DirMdGenerator] Found a main file : {file.name}, writing the header of the documentation with this file")
                 self.header_written = True
-                for elt in custom_list :
+                for elt in file.file_data :
                     if elt.type_ in self.custom_done:
                         continue
                     elif elt.is_list :
-                        part = self.generate_custom_list(custom_list, elt.type_)
+                        part = self.generate_custom_list(file.file_data, elt.type_)
                         self.body = self.body.replace(elt.ref, part)
                         self.custom_done.append(elt.type_)
                     else :
@@ -196,13 +200,13 @@ class DirMdGenerator(MdGenerator):
                         print("[DEBUG] [DirMdGenerator] unused customs : ", ", ".join(temp))
 
 
-            self.body += self._file_wrap(fname_list[i])
+            self.body += self._file_wrap(file.name)
 
-            for elt in obj_list[i] :
+            for elt in file.content_list :
                 if isinstance(elt, Parsed_class):
                     self.body += self.generate_class(elt)
 
-            for elt in obj_list[i] :
+            for elt in file.content_list :
                 if isinstance(elt, Parsed_function):
                     self.body += self.generate_function(elt)
 

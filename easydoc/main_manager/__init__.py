@@ -1,5 +1,5 @@
 from .FileParser import Parser
 from .TreatmentManager import TreatmentManager
-from .ContextManager import ContextManager
+from .InteractiveManager import InteractiveManager
 
-__all__ = ["Parser", "TreatmentManager", "ContextManager"]
+__all__ = ["Parser", "TreatmentManager", "InteractiveManager"]
