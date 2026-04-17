@@ -2,8 +2,13 @@
 
 ## Introduction
 
+**Version**
+ : 1.0.0
 
-
+**Sum-up**
+	
+This package initializer exposes the parsed object and tree classes
+needed by the EasyDoc core modules.
 
 
 ## Uses
@@ -22,7 +27,7 @@ Déclaration :
 	class NotDeveloppedError(Exception):
 
 Description :
-	Raised when a feature is not yet implemented
+	Raised when a feature is not yet implemented.
 
 ## Fichier easydoc/classes/parsed_objects.py :
 ---
@@ -35,12 +40,22 @@ Déclaration :
 	class Parsed_file:
 
 Description :
+	Represents a parsed Python file and its content.
 
 #### **Methode __init__ :**
 
 Déclaration :
 
     def __init__(self, name : str, content_list : list["Parsed_class", "Parsed_function"], file_data : list["Custom_comment"]):
+
+Description :
+
+	Initialize a parsed file container.
+	
+	Args:
+	name (str): The file name or file path.
+	content_list (list[Parsed_class, Parsed_function]): Parsed classes and functions.
+	file_data (list[Custom_comment]): Custom comments extracted from the file.
 
 ### Classe Parsed_function :
 ---
@@ -50,6 +65,7 @@ Déclaration :
 	class Parsed_function:
 
 Description :
+	Represents a parsed function 
 
 #### **Methode __init__ :**
 
@@ -57,17 +73,36 @@ Déclaration :
 
     def __init__(self, declaration, docstring):
 
+Description :
+
+	Initialize a parsed function.
+	
+	Args:
+	declaration (str): The declaration line or block containing the def.
+	docstring (str): The docstring content associated with the declaration.
+
 #### **Methode set_declaration :**
 
 Déclaration :
 
     def set_declaration(self, declaration):
 
+Description :
+
+	Extract the function name from the declaration.
+	
+	Args:
+	declaration (str): The function declaration string.
+
 #### **Methode __str__ :**
 
 Déclaration :
 
     def __str__(self):
+
+Description :
+
+	Return the parsed element name.
 
 ### Classe Custom_comment :
 ---
@@ -77,12 +112,23 @@ Déclaration :
 	class Custom_comment:
 
 Description :
+	Represents a custom comment block extracted from source files.
 
 #### **Methode __init__ :**
 
 Déclaration :
 
     def __init__(self, type_, ref, is_list, content):
+
+Description :
+
+	Initialize a custom comment block.
+	
+	Args:
+	type_ (str): The type of custom comment.
+	ref (str): The reference token used to replace custom comment placeholders.
+	is_list (bool): Whether the comment should be treated as a list.
+	content (str): The comment content.
 
 ### Classe Parsed_class :
 ---
@@ -92,6 +138,7 @@ Déclaration :
 	class Parsed_class:
 
 Description :
+	Represents a parsed class and its methods.
 
 #### **Methode __init__ :**
 
@@ -99,11 +146,26 @@ Déclaration :
 
     def __init__(self, declaration, docstring):
 
+Description :
+
+	Initialize a parsed class.
+	
+	Args:
+	declaration (str): The class declaration string.
+	docstring (str): The class docstring content.
+
 #### **Methode set_declaration :**
 
 Déclaration :
 
     def set_declaration(self, declaration):
+
+Description :
+
+	Extract the class name from the declaration.
+	
+	Args:
+	declaration (str): The class declaration string.
 
 #### **Methode add_method :**
 
@@ -111,11 +173,22 @@ Déclaration :
 
     def add_method(self, method : Parsed_function):
 
+Description :
+
+	Add a method to the parsed class.
+	
+	Args:
+	method (Parsed_function): The parsed method to add.
+
 #### **Methode __str__ :**
 
 Déclaration :
 
     def __str__(self):
+
+Description :
+
+	Return the class name.
 
 ## Fichier easydoc/classes/tree_objects.py :
 ---
@@ -128,6 +201,7 @@ Déclaration :
 	class Node:
 
 Description :
+	Represents a tree node that can contain child nodes and leaves.
 
 #### **Methode __init__ :**
 
@@ -135,11 +209,14 @@ Déclaration :
 
     def __init__(self, name : str, parent : Union["Node", None] = None, path : str = ""):
 
-#### **Methode add_child :**
+Description :
 
-Déclaration :
-
-    def add_child(self, child):
+	Initialize a tree node.
+	
+	Args:
+	name (str): The name of the node.
+	parent (Union["Node", None]): The parent node, or None for a root node.
+	path (str): Optional path string used by the node.
 
 #### **Methode full_path :**
 
@@ -149,8 +226,33 @@ Déclaration :
 
 Description :
 
+	Return the full path of this node by concatenating parent names.
+
+#### **Methode show_tree :**
+
+Déclaration :
+
+    def show_tree(self, level=0):
+
+Description :
+
+	Print the tree structure rooted at this node.
 	
-	return the full path of the leaf by concatenating the name of the leaf and the name of its parent nodes
+	Args:
+	level (int): Current indentation level for recursive display.
+
+#### **Methode add_child :**
+
+Déclaration :
+
+    def add_child(self, child : Union["Node", "Leaf"]):
+
+Description :
+
+	Add a child node or leaf to this node.
+	
+	Args:
+	child (Union["Node", "Leaf"]): Child element to attach.
 
 #### **Methode __str__ :**
 
@@ -158,11 +260,22 @@ Déclaration :
 
     def __str__(self):
 
+Description :
+
+	Return the node name.
+
 #### **Methode __iter__ :**
 
 Déclaration :
 
     def __iter__(self):
+
+Description :
+
+	Iterate over the node and its subtree in depth-first order.
+	
+	Yields:
+	Union["Node", "Leaf"]: Each node or leaf in the tree.
 
 #### **Methode __len__ :**
 
@@ -182,13 +295,7 @@ Description :
 	│   └── child1.2
 	└── child2
 	
-	returns 5 for the root node, 3 for child1 and 1 for child2
-
-#### **Methode show_tree :**
-
-Déclaration :
-
-    def show_tree(self, level=0):
+	returns 5 for the root node, 3 for child1, 1 for child2 and 1 for the root
 
 #### **Methode __truediv__ :**
 
@@ -228,6 +335,7 @@ Déclaration :
 	class Leaf:
 
 Description :
+	Represents a leaf item in the tree, typically a Python file.
 
 #### **Methode __init__ :**
 
@@ -235,17 +343,33 @@ Déclaration :
 
     def __init__(self, name : str, parent : Union["Node", None] = None):
 
+Description :
+
+	Initialize a tree leaf.
+	
+	Args:
+	name (str): The name of the leaf.
+	parent (Union["Node", None]): The parent node, or None for a detached leaf.
+
 #### **Methode __str__ :**
 
 Déclaration :
 
     def __str__(self):
 
+Description :
+
+	Return the leaf name.
+
 #### **Methode __len__ :**
 
 Déclaration :
 
     def __len__(self):
+
+Description :
+
+	Return 1 for a leaf.
 
 #### **Methode is_py_leaf :**
 
@@ -255,8 +379,13 @@ Déclaration :
 
 Description :
 
+	Return True when the string represents a Python file name.
 	
-	return true if the string passed represents a Python file, False otherwise
+	Args:
+	elt (str): The string to test.
+	
+	Returns:
+	bool: True when elt ends with .py, False otherwise.
 
 #### **Methode full_path :**
 
@@ -266,153 +395,12 @@ Déclaration :
 
 Description :
 
-	
-	return the full path of the leaf by concatenating the name of the leaf and the name of its parent nodes
+	Return the full path of this leaf by concatenating parent names.
 
 ## Fichier easydoc/classes/__init__.py :
 ---
 
-## Fichier easydoc/generators/HTMLGenerator.py :
----
-
-### Classe HTMLGenerator :
----
-
-Déclaration :
-
-	class HTMLGenerator:
-
-Description :
-
-## Fichier easydoc/generators/MarkdownGenerator.py :
----
-
-### Classe MdGenerator :
----
-
-Déclaration :
-
-	class MdGenerator:
-
-Description :
-
-#### **Methode __init__ :**
-
-Déclaration :
-
-    def __init__(self, 
-                 debug : bool = False):
-
-#### **Methode _class_wrap :**
-
-Déclaration :
-
-    def _class_wrap(name) : 
-
-#### **Methode _method_wrap :**
-
-Déclaration :
-
-    def _method_wrap(name) : 
-
-#### **Methode _function_wrap :**
-
-Déclaration :
-
-    def _function_wrap(name) : 
-
-#### **Methode _custom_list_wrap :**
-
-Déclaration :
-
-    def _custom_list_wrap(name) : 
-
-#### **Methode _custom_header_wrap :**
-
-Déclaration :
-
-    def _custom_header_wrap(name) : 
-
-#### **Methode _file_wrap :**
-
-Déclaration :
-
-    def _file_wrap(name) : 
-
-#### **Methode open_pattern :**
-
-Déclaration :
-
-    def open_pattern():
-
-#### **Methode open_custom_config :**
-
-Déclaration :
-
-    def open_custom_config() -> dict:
-
-#### **Methode create_file :**
-
-Déclaration :
-
-    def create_file(name, body):
-
-#### **Methode generate_custom_list :**
-
-Déclaration :
-
-    def generate_custom_list(self, customs : list[Custom_comment], type_):
-
-#### **Methode generate_class :**
-
-Déclaration :
-
-    def generate_class(self, classe : Parsed_class):
-
-#### **Methode generate_function :**
-
-Déclaration :
-
-    def generate_function(self, func : Parsed_function, in_class : bool = False):
-
-### Classe OneFileMdGenerator :
----
-
-Déclaration :
-
-	class OneFileMdGenerator(MdGenerator):
-
-Description :
-
-#### **Methode __init__ :**
-
-Déclaration :
-
-    def __init__(self, obj_list : list[Parsed_class, Parsed_function], custom_list : list[Custom_comment], fname : str, debug : bool = False):
-
-### Classe DirMdGenerator :
----
-
-Déclaration :
-
-	class DirMdGenerator(MdGenerator):
-
-Description :
-
-#### **Methode __init__ :**
-
-Déclaration :
-
-    def __init__(self, 
-                 file_list : list[Node, Leaf], 
-                 dirname : str, 
-                 main : str = None,
-                 debug : bool = False):
-
-## Fichier easydoc/generators/__init__.py :
----
-
-## Fichier easydoc/main_manager/FileParser.py :
+## Fichier easydoc/core/FileParser.py :
 ---
 
 ### Classe Parser :
@@ -423,9 +411,7 @@ Déclaration :
 	class Parser:
 
 Description :
-	
-	Cette classe parcours le fichier source, identifie les classes et fonctions
-	et identifie les docstrings présents pour chaque classe et fonction
+	Parse Python source files and extract structured metadata.
 
 #### **Methode __init__ :**
 
@@ -435,15 +421,11 @@ Déclaration :
 
 Description :
 
-	
-	initialise les attributs de la classe :
-	-fpath contient le chemin vers le fichier source
-	-fname contient le nom du fichier source
-	-parse est une liste contenant les classes et fonctions indépendantes scrappées
-	-intro contient le docstring en en-tête du fichier source
+	Initialize the parser and immediately start parsing the file.
 	
 	Args:
-	path (str): chemin vers le fichier source.
+	path (str): Path to the source file.
+	debug (bool): Enable debug logging.
 
 #### **Methode get_parse :**
 
@@ -453,11 +435,10 @@ Déclaration :
 
 Description :
 
-	
-	retourne la liste des classes et fonctions scrappées
+	Return parsed classes and functions from the file.
 	
 	Returns:
-	list[Parsed_class, Parsed_function]: retourne la liste des classes et fonctions scrappées
+	list[Parsed_class, Parsed_function]: The parsed classes and functions.
 
 #### **Methode get_file_data :**
 
@@ -467,11 +448,10 @@ Déclaration :
 
 Description :
 
-	
-	retourne la liste des commentaires personnalisés scrappés
+	Return the custom comment blocks extracted from the file.
 	
 	Returns:
-	list[Custom_comment]: retourne la liste des commentaires personnalisés scrappés
+	list[Custom_comment]: The parsed custom comments.
 
 #### **Methode parse_source :**
 
@@ -481,10 +461,9 @@ Déclaration :
 
 Description :
 
+	Parse the source file and extract classes, functions, and standalone docstrings.
 	
-	parcours le code à la recherche d'une déclaration de classe, de fonction
-	et recherche un docstring rattaché à aucune classe ni fonction
-	ce docstring indépendant est interprété comme une explication du fichier source
+	The standalone docstring in the file is treated as a file-level description.
 
 #### **Methode is_custom :**
 
@@ -492,11 +471,32 @@ Déclaration :
 
     def is_custom(self, line : str) -> bool:
 
+Description :
+
+	Detect whether the given line contains a custom comment marker.
+	
+	Args:
+	line (str): The source line to inspect.
+	
+	Returns:
+	bool: The custom marker string if found, otherwise False.
+
 #### **Methode parse_custom :**
 
 Déclaration :
 
     def parse_custom(self, custom : str, lines : list[str]):
+
+Description :
+
+	Parse a custom comment block from the source lines.
+	
+	Args:
+	custom (str): The custom marker to parse.
+	lines (list[str]): The source lines starting at the marker location.
+	
+	Returns:
+	int: Number of source lines consumed by the custom block.
 
 #### **Methode is_class :**
 
@@ -506,14 +506,13 @@ Déclaration :
 
 Description :
 
-	
-	Vérifie si une ligne est une déclaration de classe
+	Check whether a line declares a class.
 	
 	Args:
-	line (str): ligne à vérifier
+	line (str): The line to inspect.
 	
 	Returns:
-	bool: retourne True si la ligne est une déclaration de classe, False sinon
+	bool: True if the line declares a class, False otherwise.
 
 #### **Methode is_function :**
 
@@ -523,25 +522,16 @@ Déclaration :
 
 Description :
 
+	Check whether the current lines start a function declaration.
 	
-	Vérifie si la ligne du pointer est une fonction, ou le début d'une fonction dont l'en-tête est sur plusieurs lignes :
-	ex : 
-	
-	def funct( param1 = "foo", param2 = ("poo", 1)) -> None:
-	
-	ou
-	
-	def funct(
-	param1 = "foo",
-	param2 = ("poo", 1)
-	) -> None:
+	This handles both single-line function headers and multi-line headers.
 	
 	Args:
-	line (list[str]): lignes à vérifier
-	in_class (bool, optional): indique si il s'agit d'une méthode ou d'une fonction. Defaults to False.
+	lines (list[str]): The source lines to inspect.
+	in_class (bool, optional): Whether the function is indented as a method. Defaults to False.
 	
 	Returns:
-	bool: retourne True si il s'agit d'une déclaration de fonction, False sinon
+	bool: True if the lines begin a function declaration, False otherwise.
 
 #### **Methode get_function_declaration :**
 
@@ -551,25 +541,15 @@ Déclaration :
 
 Description :
 
+	Extract a function declaration block from source lines.
 	
-	Récupère la déclaration de la fonction et la retoure
-	ex : 
-	
-	def funct( param1 = "foo", param2 = ("poo", 1)) -> None:
-	
-	ou
-	
-	def funct(
-	param1 = "foo",
-	param2 = ("poo", 1)
-	) -> None:
+	This method returns the full function header and the number of lines consumed.
 	
 	Args:
-	line (list[str]): lignes où se trouvent la déclaration
-	in_class (bool, optional): indique si il s'agit d'une méthode ou d'une fonction. Defaults to False.
+	lines (list[str]): The lines beginning at the function declaration.
 	
 	Returns:
-	str: retourne la déclaration de la fonction sous forme d'un string
+	tuple[str, int]: The function declaration string and the number of lines consumed.
 
 #### **Methode class_parser :**
 
@@ -579,15 +559,13 @@ Déclaration :
 
 Description :
 
-	
-	isole la déclaration d'une classe, son docstring éventuel,
-	puis parcours le code de la classe à la recherche de méthodes
+	Parse a class block and extract its docstring and method definitions.
 	
 	Args:
-	sub_source (list[str]): code source commençant à partir de la déclaration de la classe
+	sub_source (list[str]): Source code starting at the class declaration.
 	
 	Returns:
-	int: retourne la taille de la classe en nombre de ligne, évite que le parseur principal repasse sur du code déjà parsé
+	int: Number of lines consumed while parsing the class block.
 
 #### **Methode function_parser :**
 
@@ -597,16 +575,15 @@ Déclaration :
 
 Description :
 
-	
-	isole la déclaration d'une fonction et récupère son docstring éventuel,
+	Parse a function or method block and extract its docstring.
 	
 	Args:
-	sub_source (list[str]): code source commençant à partir de la déclaration de la fonction
-	parent (Parsed_class, optional): si le paramètre est fourni, alors function_parser
-	considèrera que la fonction à scraper est une méthode appartenant à la classe "parent". Defaults to None.
+	sub_source (list[str]): Source code starting at the function declaration.
+	parent (Parsed_class, optional): If provided, the function is treated as a method of this class.
+	Defaults to None.
 	
 	Returns:
-	int: retourne la taille de la fonction en nombre de ligne, évite que le parseur principal repasse sur du code déjà parsé
+	int: Number of lines consumed while parsing the function block.
 
 #### **Methode is_docstring :**
 
@@ -616,14 +593,13 @@ Déclaration :
 
 Description :
 
-	
-	Vérifie si une ligne est le début d'un docstring sur plusieurs lignes
+	Check whether a line begins a multi-line docstring.
 	
 	Args:
-	line (str): ligne à vérifier
+	line (str): The source line to inspect.
 	
 	Returns:
-	bool: retourne True si il s'agit du début d'un docstring, False sinon
+	bool: True if the line starts a multi-line docstring, False otherwise.
 
 #### **Methode is_oneline_docstring :**
 
@@ -633,16 +609,13 @@ Déclaration :
 
 Description :
 
-	
-	Vérifie si une ligne est une doctring sur une seule ligne, par exemple :
-	
-	'''doctring d'une fonction'''
+	Check whether a line contains a one-line docstring.
 	
 	Args:
-	line (str): ligne à vérifier
+	line (str): The source line to inspect.
 	
 	Returns:
-	bool: retourne True si il s'agit d'un docstring sur une ligne, False sinon
+	bool: True if the line contains a one-line docstring, False otherwise.
 
 #### **Methode format_string :**
 
@@ -652,16 +625,16 @@ Déclaration :
 
 Description :
 
+	Format the given string for proper indentation handling.
 	
-	Formate le string passé en paramètre,
-	remplace les chaine de tabs supérieures à 3 par une double tab,
-	si aucune tab n'est présente dans la chaine, la fonction en ajoute une en début de chaine
+	This replaces sequences of four spaces with a tab and normalizes tabs.
+	If the resulting string has no indentation, a leading tab is added.
 	
 	Args:
-	string (str): string à traiter
+	string (str): The string to format.
 	
 	Returns:
-	str: retourne la chaine traité selon l'algorithme défini plus haut
+	str: The formatted string.
 
 #### **Methode get_source :**
 
@@ -671,11 +644,10 @@ Déclaration :
 
 Description :
 
-	
-	Ouvre et retourne le code source du fichier choisi
+	Read and return the source lines of the current file.
 	
 	Returns:
-	list[str]: retourne une liste dont chaque élément est une ligne du fichier source à parser
+	list[str]: Source lines of the file.
 
 #### **Methode open_custom_config :**
 
@@ -683,7 +655,14 @@ Déclaration :
 
     def open_custom_config() -> dict:
 
-## Fichier easydoc/main_manager/InteractiveManager.py :
+Description :
+
+	Load the custom comment marker configuration from package resources.
+	
+	Returns:
+	dict: Loaded configuration for supported custom comment markers.
+
+## Fichier easydoc/core/InteractiveManager.py :
 ---
 
 ### Classe InteractiveManager :
@@ -694,24 +673,52 @@ Déclaration :
 	class InteractiveManager:
 
 Description :
+	Manage the interactive mode.
+	
+	Parse user input to set the arguments for the TreatmentManager and start generation.
 
-#### **Methode is_valid_path :**
+#### **Methode _ask_type :**
 
 Déclaration :
 
-    def is_valid_path(path: str) -> bool:
+    def _ask_type(cls) -> str:
 
 Description :
 
-	Check if the given path is valid and points to a python file or a directory
+	
+	Ask the user for the document type to treat
+	
+	Returns:
+	str: returns the document type to treat, either "file" or "dir"
+
+#### **Methode _ask_path :**
+
+Déclaration :
+
+    def _ask_path(cls) -> str:
+
+Description :
+
+	
+	Ask the user for the path to the file or directory to document
+	
+	Returns:
+	str: returns the path to the file or directory to document
 
 #### **Methode run :**
 
 Déclaration :
 
-    def run(cls, default_args : dict) -> dict:
+    def run(cls) -> dict:
 
-## Fichier easydoc/main_manager/TreatmentManager.py :
+Description :
+
+	Start the interactive prompt and return the selected arguments.
+	
+	Returns:
+	dict: The parsed arguments to pass to TreatmentManager.
+
+## Fichier easydoc/core/TreatmentManager.py :
 ---
 
 ### Classe TreatmentManager :
@@ -722,12 +729,13 @@ Déclaration :
 	class TreatmentManager:
 
 Description :
+	Manage the documentation treatment workflow.
 
 #### **Methode __init__ :**
 
 Déclaration :
 
-    def __init__(self, path: str, type: str, format: str, recursive: bool = False, onefile: bool = False, main: str = None, debug: bool = False) -> None:
+    def __init__(self, **kwargs) -> None:
 
 Description :
 
@@ -743,12 +751,6 @@ Description :
 	main (str): path to the main file for the directory
 	debug (bool): whether to enable debug mode
 
-#### **Methode get_default_args :**
-
-Déclaration :
-
-    def get_default_args():
-
 #### **Methode _parse_file :**
 
 Déclaration :
@@ -763,7 +765,19 @@ Description :
 
 Déclaration :
 
-    def _search_file(self, path: str, parent : Node | None = None) -> Node:
+    def _search_file(self, path: str, parent : Node | None = None, depth: int = 0) -> Node:
+
+Description :
+
+	Recursively search a directory and build a file tree of Python files.
+	
+	Args:
+	path (str): Directory path to scan.
+	parent (Node | None): Optional parent node for tree construction.
+	depth (int): Current recursion depth.
+	
+	Returns:
+	Node: The root node of the discovered tree.
 
 #### **Methode _treat_file :**
 
@@ -785,13 +799,10 @@ Description :
 
 	Treat a whole directory and generate the documentation for all the files in it
 
-## Fichier easydoc/main_manager/__init__.py :
+## Fichier easydoc/core/utils/const.py :
 ---
 
-## Fichier easydoc/__init__.py :
----
-
-## Fichier easydoc/__main__.py :
+## Fichier easydoc/core/utils/function_utils.py :
 ---
 
 ### Fonction is_valid_path :
@@ -802,4 +813,248 @@ def is_valid_path(path: str) -> bool:
 
 Description :
 
-	Check if the given path is valid and points to a python file or a directory
+	Check if the given path is valid and points to a python file or a directory.
+
+## Fichier easydoc/core/utils/__init__.py :
+---
+
+## Fichier easydoc/core/__init__.py :
+---
+
+## Fichier easydoc/generators/HTMLGenerator.py :
+---
+
+### Classe HTMLGenerator :
+---
+
+Déclaration :
+
+	class HTMLGenerator:
+
+Description :
+	Represents the HTML generator for EasyDoc.
+	
+	Currently a placeholder for future HTML documentation generation support.
+
+## Fichier easydoc/generators/MarkdownGenerator.py :
+---
+
+### Classe MdGenerator :
+---
+
+Déclaration :
+
+	class MdGenerator:
+
+Description :
+	Base class for Markdown generators.
+
+#### **Methode __init__ :**
+
+Déclaration :
+
+    def __init__(self, 
+                 debug : bool = False):
+
+Description :
+
+	Initialize the markdown generator and load the template resources.
+	
+	Args:
+	debug (bool): Enable debug output during generation.
+
+#### **Methode _class_wrap :**
+
+Déclaration :
+
+    def _class_wrap(name) : 
+
+Description :
+
+	Return a markdown header for a class section.
+
+#### **Methode _method_wrap :**
+
+Déclaration :
+
+    def _method_wrap(name) : 
+
+Description :
+
+	Return a markdown header for a method section.
+
+#### **Methode _function_wrap :**
+
+Déclaration :
+
+    def _function_wrap(name) : 
+
+Description :
+
+	Return a markdown header for a function section.
+
+#### **Methode _custom_list_wrap :**
+
+Déclaration :
+
+    def _custom_list_wrap(name) : 
+
+Description :
+
+	Return a markdown header for a custom list section.
+
+#### **Methode _custom_header_wrap :**
+
+Déclaration :
+
+    def _custom_header_wrap(name) : 
+
+Description :
+
+	Return a markdown header for a custom comment block.
+
+#### **Methode _file_wrap :**
+
+Déclaration :
+
+    def _file_wrap(name) : 
+
+Description :
+
+	Return a markdown header for a file section.
+
+#### **Methode open_pattern :**
+
+Déclaration :
+
+    def open_pattern():
+
+Description :
+
+	Load the Markdown template pattern for documentation output.
+
+#### **Methode open_custom_config :**
+
+Déclaration :
+
+    def open_custom_config() -> dict:
+
+Description :
+
+	Load custom comment configuration from the package resources.
+
+#### **Methode create_file :**
+
+Déclaration :
+
+    def create_file(name, body):
+
+Description :
+
+	Create a documentation file from the generated body.
+	
+	Args:
+	name (str): Base name of the created documentation file.
+	body (str): The content to write.
+
+#### **Methode generate_custom_list :**
+
+Déclaration :
+
+    def generate_custom_list(self, customs : list[Custom_comment], type_):
+
+Description :
+
+	Generate documentation for a list of custom comments.
+	
+	Args:
+	customs (list[Custom_comment]): Custom comments to render.
+	type_ (str): The type of custom comment list to generate.
+	
+	Returns:
+	str: The generated markdown block for the custom list.
+
+#### **Methode generate_class :**
+
+Déclaration :
+
+    def generate_class(self, classe : Parsed_class):
+
+Description :
+
+	Generate the markdown block for a parsed class.
+
+#### **Methode generate_function :**
+
+Déclaration :
+
+    def generate_function(self, func : Parsed_function, in_class : bool = False):
+
+Description :
+
+	Generate the markdown block for a parsed function or method.
+
+### Classe OneFileMdGenerator :
+---
+
+Déclaration :
+
+	class OneFileMdGenerator(MdGenerator):
+
+Description :
+	Generate a single markdown documentation file for a list of parsed objects.
+
+#### **Methode __init__ :**
+
+Déclaration :
+
+    def __init__(self, obj_list : list[Parsed_class, Parsed_function], custom_list : list[Custom_comment], fname : str, debug : bool = False):
+
+Description :
+
+	Initialize and generate a documentation markdown file for a single source module.
+	
+	Args:
+	obj_list (list[Parsed_class, Parsed_function]): Parsed classes and functions.
+	custom_list (list[Custom_comment]): Custom comments from the source file.
+	fname (str): Base name of the output file.
+	debug (bool): Enable debug logging.
+
+### Classe DirMdGenerator :
+---
+
+Déclaration :
+
+	class DirMdGenerator(MdGenerator):
+
+Description :
+	Generate documentation for a directory of Python files.
+
+#### **Methode __init__ :**
+
+Déclaration :
+
+    def __init__(self, 
+                 file_list : list[Node, Leaf], 
+                 dirname : str, 
+                 main : str = None,
+                 debug : bool = False):
+
+Description :
+
+	Initialize the directory documentation generator.
+	
+	Args:
+	file_list (list[Node, Leaf]): The file tree nodes and leaves to document.
+	dirname (str): The base directory name used for the output file.
+	main (str, optional): Optional main file name to use for header selection.
+	debug (bool): Enable debug logging.
+
+## Fichier easydoc/generators/__init__.py :
+---
+
+## Fichier easydoc/__init__.py :
+---
+
+## Fichier easydoc/__main__.py :
+---
