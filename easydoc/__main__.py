@@ -1,3 +1,11 @@
+#/actual_version : 1.2.8
+#/TODO Add language option support and improved CLI validation
+#/file_intro
+"""
+This script is the CLI entry point for EasyDoc. It parses CLI options,
+validates the requested path, and starts file or directory documentation generation.
+"""
+
 from argparse import ArgumentParser
 from importlib.metadata import version
 

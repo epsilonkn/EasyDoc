@@ -1,3 +1,11 @@
+#/actual_version : 1.2.3
+#/TODO Add support for persisted interactive defaults
+#/file_intro
+"""
+This module manages interactive mode input and converts user commands
+into the argument dictionary required by TreatmentManager.
+"""
+
 from .utils import (
     AUTHORIZED_ARGS, 
     LANGUAGES, 
@@ -10,9 +18,9 @@ from .utils import (
 )
 
 class InteractiveManager:
-    """
-    Manage the interactive mode.
-    parse the user input to set the arguments for the TreatmentManager and start the generation when the user is ready.
+    """Manage the interactive mode.
+
+    Parse user input to set the arguments for the TreatmentManager and start generation.
     """
 
     @classmethod
@@ -47,6 +55,11 @@ class InteractiveManager:
 
     @classmethod
     def run(cls) -> dict:
+        """Start the interactive prompt and return the selected arguments.
+
+        Returns:
+            dict: The parsed arguments to pass to TreatmentManager.
+        """
         user_answer = ""
 
         return_args= {}
@@ -61,7 +74,7 @@ class InteractiveManager:
                 case "help":
                     print("Available options :" )
                     print("\t- run                      : start the documentation generation with the current arguments")
-                    print(f"\t- format | f               : type of documentation to generate, either [{', '.join(FORMATS)}], usage : format = <format>")
+                    print(f"\t- format | f              : type of documentation to generate, either [{', '.join(FORMATS)}], usage : format = <format>")
                     print("\t- language | lang          : language used in the documentation, enter the keyword [language | lang] to see options, usage : NOT IMPLEMENTED") #language = <language>
                     if return_args["type"] == "dir" :
                         print("\t- recursive | rec          : enable or disable the recursive search for python files in the directory, usage : recursive = <y/n>")

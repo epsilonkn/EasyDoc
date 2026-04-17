@@ -1,3 +1,10 @@
+#/actual_version : 1.0.0
+#/file_intro
+"""
+This package initializer exports the EasyDoc core services and helper utilities
+used by the command-line interface and other modules.
+"""
+
 from .FileParser import Parser
 from .TreatmentManager import TreatmentManager
 from .InteractiveManager import InteractiveManager

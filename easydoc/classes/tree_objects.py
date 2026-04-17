@@ -1,3 +1,11 @@
+#/actual_version : 1.2.3
+#/TODO Support symbolic links and depth control in the file tree
+#/file_intro
+"""
+This module provides the tree abstraction used to represent parsed directories
+and Python file leaves during documentation generation.
+"""
+
 from typing import Union
 
 

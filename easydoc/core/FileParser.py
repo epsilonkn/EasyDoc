@@ -1,17 +1,12 @@
+#/actual_version : 1.2.3
+#/last_release_date : 17/04/2026                          
+#/author : Ywan GERARD
+#/TODO Add support for more custom comment types and nested declarations
 #/file_intro
 """
-Module d'analyse d'un fichier source python
-contient les classes de données ainsi que la classe Analyse qui se charge du parsing
-
-Raises:
-    IndexError: raise IndexError si la classe Analyse détecte une parenthèse non fermée 
-    empêchant la détection de la fin d'une fonction
+This module parses Python source code and extracts both standard docstrings
+and README-style custom comment markers for documentation generation.
 """
-
-
-#/actual_version : 1.2.3
-#/last_release_date : 17/04/2026                         
-#/author : Ywan GERARD
 
 
 from importlib.resources import files
@@ -23,21 +18,14 @@ from easydoc.classes import Parsed_class, Parsed_function, Custom_comment
 
 
 class Parser:
-    """
-    Cette classe parcours le fichier source, identifie les classes et fonctions
-    et identifie les docstrings présents pour chaque classe et fonction
-    """
+    """Parse Python source files and extract structured metadata."""
 
     def __init__(self, path, debug=False) -> None:
-        """
-        initialise les attributs de la classe :
-        -fpath contient le chemin vers le fichier source
-        -fname contient le nom du fichier source
-        -parse est une liste contenant les classes et fonctions indépendantes scrappées
-        -intro contient le docstring en en-tête du fichier source
+        """Initialize the parser and immediately start parsing the file.
 
         Args:
-            path (str): chemin vers le fichier source.
+            path (str): Path to the source file.
+            debug (bool): Enable debug logging.
         """
         self.debug = debug
         self.fpath = Path(path)
@@ -50,30 +38,27 @@ class Parser:
 
 
     def get_parse(self) -> list[Parsed_class, Parsed_function]:
-        """
-        retourne la liste des classes et fonctions scrappées
+        """Return parsed classes and functions from the file.
 
         Returns:
-            list[Parsed_class, Parsed_function]: retourne la liste des classes et fonctions scrappées
+            list[Parsed_class, Parsed_function]: The parsed classes and functions.
         """
         return self.parse
     
 
     def get_file_data(self) -> list[Custom_comment]:
-        """
-        retourne la liste des commentaires personnalisés scrappés
+        """Return the custom comment blocks extracted from the file.
 
         Returns:
-            list[Custom_comment]: retourne la liste des commentaires personnalisés scrappés
+            list[Custom_comment]: The parsed custom comments.
         """
         return self.file_data
 
 
     def parse_source(self):
-        """
-        parcours le code à la recherche d'une déclaration de classe, de fonction
-        et recherche un docstring rattaché à aucune classe ni fonction
-        ce docstring indépendant est interprété comme une explication du fichier source
+        """Parse the source file and extract classes, functions, and standalone docstrings.
+
+        The standalone docstring in the file is treated as a file-level description.
         """
         source : list[str]= self.get_source()
         if self.debug:
@@ -98,6 +83,14 @@ class Parser:
 
     
     def is_custom(self, line : str) -> bool:
+        """Detect whether the given line contains a custom comment marker.
+
+        Args:
+            line (str): The source line to inspect.
+
+        Returns:
+            bool: The custom marker string if found, otherwise False.
+        """
         for custom in self.customs:
             if custom in line :
                 return custom
@@ -105,6 +98,15 @@ class Parser:
     
 
     def parse_custom(self, custom : str, lines : list[str]):
+        """Parse a custom comment block from the source lines.
+
+        Args:
+            custom (str): The custom marker to parse.
+            lines (list[str]): The source lines starting at the marker location.
+
+        Returns:
+            int: Number of source lines consumed by the custom block.
+        """
         pointer = 0
         content = ""
         match custom :
@@ -132,38 +134,28 @@ class Parser:
 
 
     def is_class(self, line: str) -> bool:
-        """
-        Vérifie si une ligne est une déclaration de classe
+        """Check whether a line declares a class.
 
         Args:
-            line (str): ligne à vérifier
+            line (str): The line to inspect.
 
         Returns:
-            bool: retourne True si la ligne est une déclaration de classe, False sinon
+            bool: True if the line declares a class, False otherwise.
         """
         return bool(re.search(r"^class\s.*:", line))
     
 
     def is_function(self, lines : list[str], in_class = False) -> bool:
-        """
-        Vérifie si la ligne du pointer est une fonction, ou le début d'une fonction dont l'en-tête est sur plusieurs lignes :
-        ex : 
+        """Check whether the current lines start a function declaration.
 
-        def funct( param1 = "foo", param2 = ("poo", 1)) -> None:
-
-        ou
-
-        def funct(
-            param1 = "foo",
-            param2 = ("poo", 1)
-        ) -> None:
+        This handles both single-line function headers and multi-line headers.
 
         Args:
-            line (list[str]): lignes à vérifier
-            in_class (bool, optional): indique si il s'agit d'une méthode ou d'une fonction. Defaults to False.
+            lines (list[str]): The source lines to inspect.
+            in_class (bool, optional): Whether the function is indented as a method. Defaults to False.
 
         Returns:
-            bool: retourne True si il s'agit d'une déclaration de fonction, False sinon
+            bool: True if the lines begin a function declaration, False otherwise.
         """
         if not in_class : pat = r"^def\s+[a-zA-Z_]\w*\s*\(.*"
         else : pat = r"^\s+def\s+[a-zA-Z_]\w*\s*\(.*"
@@ -183,25 +175,15 @@ class Parser:
 
 
     def get_function_declaration(self, lines : list[str]) -> tuple[str, int]:
-        """
-        Récupère la déclaration de la fonction et la retoure
-        ex : 
+        """Extract a function declaration block from source lines.
 
-        def funct( param1 = "foo", param2 = ("poo", 1)) -> None:
-
-        ou
-
-        def funct(
-            param1 = "foo",
-            param2 = ("poo", 1)
-        ) -> None:
+        This method returns the full function header and the number of lines consumed.
 
         Args:
-            line (list[str]): lignes où se trouvent la déclaration
-            in_class (bool, optional): indique si il s'agit d'une méthode ou d'une fonction. Defaults to False.
+            lines (list[str]): The lines beginning at the function declaration.
 
         Returns:
-            str: retourne la déclaration de la fonction sous forme d'un string
+            tuple[str, int]: The function declaration string and the number of lines consumed.
         """
         decla = ""
         pointer = 0
@@ -219,15 +201,13 @@ class Parser:
 
 
     def class_parser(self, sub_source : list[str]) -> int: 
-        """
-        isole la déclaration d'une classe, son docstring éventuel,
-        puis parcours le code de la classe à la recherche de méthodes
+        """Parse a class block and extract its docstring and method definitions.
 
         Args:
-            sub_source (list[str]): code source commençant à partir de la déclaration de la classe
+            sub_source (list[str]): Source code starting at the class declaration.
 
         Returns:
-            int: retourne la taille de la classe en nombre de ligne, évite que le parseur principal repasse sur du code déjà parsé
+            int: Number of lines consumed while parsing the class block.
         """
         obj = Parsed_class(sub_source[0], "")
         pointer = 1
@@ -259,17 +239,16 @@ class Parser:
 
 
     def function_parser(self, sub_source : list[str], parent : Parsed_class = None) -> int:
-        """
-        isole la déclaration d'une fonction et récupère son docstring éventuel,
+        """Parse a function or method block and extract its docstring.
 
         Args:
-            sub_source (list[str]): code source commençant à partir de la déclaration de la fonction
-            parent (Parsed_class, optional): si le paramètre est fourni, alors function_parser
-            considèrera que la fonction à scraper est une méthode appartenant à la classe "parent". Defaults to None.
+            sub_source (list[str]): Source code starting at the function declaration.
+            parent (Parsed_class, optional): If provided, the function is treated as a method of this class.
+                Defaults to None.
 
         Returns:
-            int: retourne la taille de la fonction en nombre de ligne, évite que le parseur principal repasse sur du code déjà parsé
-        """        
+            int: Number of lines consumed while parsing the function block.
+        """
         declaration, pointer = self.get_function_declaration(sub_source)
         docstring = ""
         while pointer < len(sub_source) \
@@ -300,44 +279,40 @@ class Parser:
     
 
     def is_docstring(self, line: str) -> bool:
-        """
-        Vérifie si une ligne est le début d'un docstring sur plusieurs lignes
+        """Check whether a line begins a multi-line docstring.
 
         Args:
-            line (str): ligne à vérifier
+            line (str): The source line to inspect.
 
         Returns:
-            bool: retourne True si il s'agit du début d'un docstring, False sinon
+            bool: True if the line starts a multi-line docstring, False otherwise.
         """
         return bool(re.search(r"(?<!')\"{3}", line))
     
 
     def is_oneline_docstring(self, line: str) -> bool:
-        """
-        Vérifie si une ligne est une doctring sur une seule ligne, par exemple :
-
-        '''doctring d'une fonction'''
+        """Check whether a line contains a one-line docstring.
 
         Args:
-            line (str): ligne à vérifier
+            line (str): The source line to inspect.
 
         Returns:
-            bool: retourne True si il s'agit d'un docstring sur une ligne, False sinon
+            bool: True if the line contains a one-line docstring, False otherwise.
         """
         return line.count('"""') == 2
 
 
     def format_string(self, string : str) -> str :
-        """
-        Formate le string passé en paramètre,
-        remplace les chaine de tabs supérieures à 3 par une double tab,
-        si aucune tab n'est présente dans la chaine, la fonction en ajoute une en début de chaine
+        """Format the given string for proper indentation handling.
+
+        This replaces sequences of four spaces with a tab and normalizes tabs.
+        If the resulting string has no indentation, a leading tab is added.
 
         Args:
-            string (str): string à traiter
+            string (str): The string to format.
 
         Returns:
-            str: retourne la chaine traité selon l'algorithme défini plus haut
+            str: The formatted string.
         """
         string = re.sub(r"\s{4}", "\t", string)
         if "\t" in string :
@@ -350,11 +325,10 @@ class Parser:
 
 
     def get_source(self) -> list[str]:
-        """
-        Ouvre et retourne le code source du fichier choisi
+        """Read and return the source lines of the current file.
 
         Returns:
-            list[str]: retourne une liste dont chaque élément est une ligne du fichier source à parser
+            list[str]: Source lines of the file.
         """
         with open(self.fpath, 'r', encoding='utf-8') as f:
             return f.readlines()
@@ -362,5 +336,10 @@ class Parser:
 
     @staticmethod
     def open_custom_config() -> dict:
+        """Load the custom comment marker configuration from package resources.
+
+        Returns:
+            dict: Loaded configuration for supported custom comment markers.
+        """
         with open(files("easydoc.config").joinpath("custom_comment_lines.json"), 'r', encoding='utf-8') as f :
             return json.load(f)

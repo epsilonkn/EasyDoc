@@ -1,3 +1,6 @@
+#/actual_version : 1.2.8
+#/file_intro
 """
-It's completely empty, but it is here to make the package a package, read the README.md for more details about the project and how to use it.
+This package is the root of EasyDoc and exports the package-level modules
+used by the CLI and by a Python import.
 """

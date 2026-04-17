@@ -1,3 +1,11 @@
+#/actual_version : 1.2.3
+#/TODO Add support for directory recursion defaults and progress logging
+#/file_intro
+"""
+This module manages the treatment workflow for a single file or a directory,
+including parsing files and generating the final documentation output.
+"""
+
 import os
 from pathlib import Path
 
@@ -7,6 +15,7 @@ from easydoc.generators import OneFileMdGenerator, DirMdGenerator
 from easydoc.core import Parser
 
 class TreatmentManager:
+    """Manage the documentation treatment workflow."""
     
     def __init__(self, **kwargs) -> None:
         """
@@ -56,6 +65,16 @@ class TreatmentManager:
 
 
     def _search_file(self, path: str, parent : Node | None = None, depth: int = 0) -> Node:
+        """Recursively search a directory and build a file tree of Python files.
+
+        Args:
+            path (str): Directory path to scan.
+            parent (Node | None): Optional parent node for tree construction.
+            depth (int): Current recursion depth.
+
+        Returns:
+            Node: The root node of the discovered tree.
+        """
         if os.path.isdir(path):
             root = Node(os.path.basename(path), path = path, parent = parent)
             for file in os.listdir(path):
