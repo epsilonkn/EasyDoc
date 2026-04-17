@@ -54,6 +54,8 @@ class TreatmentManager:
 
     def _parse_file(self, path: str) -> tuple[list[Parsed_class, Parsed_function], list[Custom_comment]]:
         """Treat a single file and generate its documentation"""
+        if Path(path).suffix != ".py":
+            raise ValueError(f"The path {path} is not a Python file")   
         parser = Parser(path, debug=self.debug)
         content_list = parser.get_parse()
         file_data = parser.get_file_data()
@@ -73,8 +75,7 @@ class TreatmentManager:
                 elif file.endswith(".py"):
                     if self.debug:
                         print(f"[DEBUG] [TreatmentManager] Treating the file : {(root / file).full_path}")
-                    leaf = Leaf(file)
-                    root / leaf
+                    leaf = root / Leaf(file)
                     leaf.associated_parse = Parsed_file(leaf.full_path, *self._parse_file(os.path.join(path, file)))
 
             return root
@@ -89,7 +90,7 @@ class TreatmentManager:
         if path is None:
             path = self.path
         content, data = self._parse_file(path)
-        OneFileMdGenerator(content, data, Path(path).stem)
+        OneFileMdGenerator(content, data, Path(path).stem, debug = self.debug)
 
 
     def _treat_dir(self):
@@ -102,14 +103,14 @@ class TreatmentManager:
         tree : Node[Leaf, Node] = self._search_file(self.path)
 
         if self.debug:
-            print(f"[DEBUG] [TreatmentManager] Found {len(tree)} Python files in the directory : {self.path}")
+            print(f"[DEBUG] [TreatmentManager] Found {len([file for file in tree if isinstance(file, Leaf)])} Python files in the directory : {self.path}")
             tree.show_tree()
 
         for file in tree:
-            if not self.onefile :
+            if not self.onefile and isinstance(file, Leaf):
                 if self.debug:
                     print(f"[DEBUG] [TreatmentManager] Treating the file : {file}")
-                self._treat_file(file)
+                self._treat_file(file.full_path)
         if self.onefile :
             if self.debug:
                 print(f"[DEBUG] [TreatmentManager] Generating a single documentation file for the whole directory : {self.path}")

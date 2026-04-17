@@ -124,6 +124,8 @@ class OneFileMdGenerator(MdGenerator):
         super().__init__(debug)
         
         self.body = self.body.replace("%module_name%", fname)
+        if self.debug :
+            print(f"[DEBUG] [DirMdGenerator] Treating the file {fname}")
         for elt in custom_list :
             if elt.type_ in self.custom_done:
                 continue
@@ -136,10 +138,13 @@ class OneFileMdGenerator(MdGenerator):
 
                 self.custom_done.append(elt.type_)
         
+        temp : list[str] = []
         for elt in self.customs :
             if self.customs[elt]["type"] not in self.custom_done :
-                print(self.customs[elt]["ref"])
+                temp.append(self.customs[elt]["ref"])
                 self.body = self.body.replace(f"{self.customs[elt]["ref"]}\n", "")
+        if self.debug and temp :
+            print("[DEBUG] [DirMdGenerator] unused customs : ", ", ".join(temp))
 
         for elt in obj_list :
             if isinstance(elt, Parsed_class):
@@ -191,13 +196,13 @@ class DirMdGenerator(MdGenerator):
 
                         self.custom_done.append(elt.type_)
                 
+                temp : list[str] = []
                 for elt in self.customs :
-                    temp : list[str] = []
                     if self.customs[elt]["type"] not in self.custom_done :
                         temp.append(self.customs[elt]["ref"])
                         self.body = self.body.replace(f"{self.customs[elt]["ref"]}\n", "")
-                    if self.debug and temp :
-                        print("[DEBUG] [DirMdGenerator] unused customs : ", ", ".join(temp))
+                if self.debug and temp :
+                    print("[DEBUG] [DirMdGenerator] unused customs : ", ", ".join(temp))
 
 
             self.body += self._file_wrap(file.name)

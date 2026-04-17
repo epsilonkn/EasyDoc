@@ -2,8 +2,6 @@ from argparse import ArgumentParser
 from importlib.metadata import version
 import pathlib
 
-from .classes import NotDeveloppedError
-
 from .main_manager import TreatmentManager, InteractiveManager
 
 
