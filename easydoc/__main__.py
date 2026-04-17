@@ -18,7 +18,8 @@ parser.add_argument("type",
                     nargs="?",
                     choices= TYPES + ["interactive"], 
                     help="the type of document to treat, either a single file or a whole directory, interactive mode allows to set the arguments interactively")
-parser.add_argument("-path", 
+parser.add_argument("path", 
+                    nargs="?",
                     help="the path to the file or directory to document")
 parser.add_argument("-f", "--format", 
                     choices=FORMATS,
@@ -42,7 +43,7 @@ match args.type :
     case "file" | "dir":
         if not is_valid_path(args.path): 
             raise ValueError(f"Invalid path: The path {args.path} doesn't point to a python file")
-        TreatmentManager(args.path, args.type, args.format, debug = args.debug)
+        TreatmentManager(path = args.path, type = args.type, format = args.format, debug = args.debug)
     case "interactive":
         modif_args = InteractiveManager.run()
         TreatmentManager(**modif_args, debug=args.debug)

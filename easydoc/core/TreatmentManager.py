@@ -76,8 +76,6 @@ class TreatmentManager:
             raise ValueError(f"The path {path} is not a directory")
 
 
-
-
     def _treat_file(self, path: str = None):
         """Treat a single file and generate its documentation"""
         if path is None:
@@ -111,11 +109,3 @@ class TreatmentManager:
                            dirname=Path(self.path).stem, 
                            main = self.main_file,
                            debug=self.debug)
-        
-
-
-if __name__ == "__main__":
-    node = TreatmentManager("easydoc", "dir", "md", recursive=True, onefile=True, main="main.py", debug=True)._search_file("easydoc")
-    assert type(node) == Node
-    assert node.name == "easydoc"
-    node.show_tree()

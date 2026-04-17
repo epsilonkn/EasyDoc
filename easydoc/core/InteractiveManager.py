@@ -1,12 +1,13 @@
 from .utils import (
-AUTHORIZED_ARGS, 
-LANGUAGES, 
-FORMATS, 
-SHORT_CUT_ARGS, 
-TYPES, 
-YES_ANSWERS, 
-NO_ANSWERS, 
-is_valid_path)
+    AUTHORIZED_ARGS, 
+    LANGUAGES, 
+    FORMATS, 
+    SHORT_CUT_ARGS, 
+    TYPES, 
+    YES_ANSWERS, 
+    NO_ANSWERS, 
+    is_valid_path
+)
 
 class InteractiveManager:
     """
