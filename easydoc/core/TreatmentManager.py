@@ -1,5 +1,5 @@
-#/actual_version : 1.2.3
-#/TODO Add support for directory recursion defaults and progress logging
+#/actual_version : 1.0.0
+#/TODO Add progress logging
 #/file_intro
 """
 This module manages the treatment workflow for a single file or a directory,

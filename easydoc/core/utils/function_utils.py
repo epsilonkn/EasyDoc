@@ -1,4 +1,4 @@
-#/actual_version : 1.2.3
+#/actual_version : 1.0.0
 #/TODO Add more reusable utilities for path validation and config discovery
 #/file_intro
 """

@@ -1,5 +1,4 @@
-#/actual_version : 1.2.3
-#/TODO Add generator export metadata and future output types
+#/actual_version : 1.0.0
 #/file_intro
 """
 This package initializer exports the supported documentation generation classes

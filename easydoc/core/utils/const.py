@@ -1,4 +1,4 @@
-#/actual_version : 1.2.3
+#/actual_version : 1.0.0
 #/TODO Add configuration for custom shortcut aliases and CLI help text
 #/file_intro
 """

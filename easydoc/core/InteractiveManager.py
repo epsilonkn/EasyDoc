@@ -1,5 +1,5 @@
-#/actual_version : 1.2.3
-#/TODO Add support for persisted interactive defaults
+#/actual_version : 1.0.0
+#/TODO Add save for parameters between prompts and improved input validation
 #/file_intro
 """
 This module manages interactive mode input and converts user commands

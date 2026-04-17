@@ -1,4 +1,4 @@
-#/actual_version : 1.2.3
+#/actual_version : 1.0.0
 #/TODO Support symbolic links and depth control in the file tree
 #/file_intro
 """

@@ -1,4 +1,4 @@
-#/actual_version : 1.2.3
+#/actual_version : 1.0.0
 #/TODO Add package-level flag support and utility exports documentation
 #/file_intro
 """

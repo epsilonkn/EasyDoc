@@ -1,4 +1,4 @@
-#/actual_version : 1.2.3
+#/actual_version : 0.0.1
 #/TODO Implement HTML output generation and template support
 #/file_intro
 """

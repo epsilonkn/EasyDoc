@@ -1,4 +1,6 @@
-"""Exception classes for EasyDoc.
+#/file_intro
+"""
+Exception classes for EasyDoc.
 
 This module defines custom exception types used by the EasyDoc package.
 """

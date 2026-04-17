@@ -1,5 +1,5 @@
 #/actual_version : 1.1.0
-#/TODO Add more parsed object metadata for decorators and nested classes
+#/TODO Update parsed object for decorators and nested classes
 #/file_intro
 """
 This module declares the parsed object containers that represent file structure,
