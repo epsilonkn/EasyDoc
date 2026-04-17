@@ -9,8 +9,8 @@ Raises:
 """
 
 
-#/actual_version : 1.2.2
-#/last_release_date : 25/02/2026                         
+#/actual_version : 1.2.3
+#/last_release_date : 17/04/2026                         
 #/author : Ywan GERARD
 
 
@@ -18,7 +18,6 @@ from importlib.resources import files
 import json
 from pathlib import Path
 import re
-import sys
 from easydoc.classes import Parsed_class, Parsed_function, Custom_comment
 
 
@@ -68,7 +67,6 @@ class Parser:
             list[Custom_comment]: retourne la liste des commentaires personnalisés scrappés
         """
         return self.file_data
-
 
 
     def parse_source(self):
@@ -366,11 +364,3 @@ class Parser:
     def open_custom_config() -> dict:
         with open(files("easydoc.config").joinpath("custom_comment_lines.json"), 'r', encoding='utf-8') as f :
             return json.load(f)
-    
-
-if __name__ == "__main__" :
-    if len(sys.argv) >= 2 :
-        path = sys.argv[1]
-        Parser(path)
-    else :
-        raise IndexError("Aucun fichier source fourni, arrêt du programme")
