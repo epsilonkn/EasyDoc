@@ -144,11 +144,11 @@ Explains a constant in the code. for now, all the constants are written at the b
     DEFAULT = "VOID"
 
 
-#### Generate the documentation :
+## Generate the documentation :
 
-### In a terminal :
+### For a file :
 
-Here is the only way implemented to generate a documentation in command line :
+To generate a documentation in command line :
 
     easydoc file "/your/path/to/file.py"
 
@@ -156,9 +156,47 @@ Note 1 : your terminal must be in the directory where you want to see the docume
 
 Note 2 : you can pass the path without double quotes, however it is better to keep them if your path got spaces in it.
 
-### In a python program :
 
-Not implemented yet.
+### For a directory :
+
+To generate a documentation in command line :
+
+    easydoc dir "/your/path/to/dir"
+
+Note 1 : your terminal must be in the directory where you want to see the documentation generated.
+
+Note 2 : you can pass the path without double quotes, however it is better to keep them if your path got spaces in it.
+
+
+### Advanced generation :
+
+You can also choose to generate the documentation interactively :
+
+    easydoc interactive
+
+This way the package will ask you to enter the parameters, here they are :
+
+__mandatory :__
+
+- _type_ : type of document to treat : file | dir
+- _path_ : the path to what you want to treat (file or dir)
+
+__optional :__
+
+- _run_ : start the generation
+- _help_ : shows all the options and their usage
+- _exit_ : close the generation
+- _format_ | f : The format of the documentation | HTML implemented in (V1.5)
+- _language | lang_ : The language in which to doc is written | NOT IMPLEMENTED YET (V1.6 planned)
+- _recursive | rec_ : (dir only) : Enable/disable recursive file search in subdirs
+- _recursive_depth | rec_d_ : (dir only) Depth of recursive search, 0 equals to disable the recursive search
+- _onefile | of_ : (dir only) If enable, will generate the whole directory doc in a single file instead a doc file per source file 
+
+### Others arguements :
+
+__-v | --version :__ Shows the version of the package and stop the program.
+
+__--debug :__ Start the debug mode for generation, meaning package will print at each step what it's doing.
 
 
 ## Next updates :
@@ -172,7 +210,3 @@ Not implemented yet.
 |V 1.6.0| Translation in differents languages | |
 |V 1.?.0| Adding user configuration | |
 |......|||
-
-## API :
-
-For now there is no released API entry points in the module, you'll have to wait for the V1.3 for the first adds
