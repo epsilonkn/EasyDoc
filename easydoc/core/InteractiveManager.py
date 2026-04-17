@@ -101,6 +101,11 @@ class InteractiveManager:
                                 return_args[arg] = True
                             elif value.lower() in NO_ANSWERS:
                                 return_args[arg] = False
+                            elif arg == "recursive_depth":
+                                if value.isdigit() and int(value) >= 0:
+                                    return_args[arg] = int(value)
+                                else:
+                                    print("Invalid value for recursive_depth. It must be a non-negative integer.")
                             else:
                                 return_args[arg] = value
                         else:

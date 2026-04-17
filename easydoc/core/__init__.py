@@ -1,4 +1,4 @@
-#/actual_version : 1.0.0
+#/actual_version 1.0.0
 #/file_intro
 """
 This package initializer exports the EasyDoc core services and helper utilities
