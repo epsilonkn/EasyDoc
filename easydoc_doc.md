@@ -3,12 +3,12 @@
 ## Introduction
 
 **Version**
- : 1.0.0
+ : 1.4.0
 
 **Sum-up**
 	
-This package initializer exposes the parsed object and tree classes
-needed by the EasyDoc core modules.
+This package is the root of EasyDoc and exports the package-level modules
+used by the CLI and by a Python import.
 
 
 ## Uses

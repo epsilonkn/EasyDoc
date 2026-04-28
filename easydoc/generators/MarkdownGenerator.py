@@ -224,10 +224,10 @@ class DirMdGenerator(MdGenerator):
             if isinstance(file, Node):
                 continue
             file : Parsed_file = file.associated_parse
-            file_name = Path(file.name).name
+            parent = str(Path(file.name).parents)
             if self.debug :
-                print(f"[DEBUG] [DirMdGenerator] Treating the file {file_name}")
-            if not self.header_written and (file_name == main or (file_name in ["main.py", "__init__.py" ])):
+                print(f"[DEBUG] [DirMdGenerator] Treating the file {file.name}")
+            if not self.header_written and (file.name == main or (file.name in [parent + "/main.py", parent + "/__init__.py", parent + "/__main__.py"])):
                 if self.debug:
                     print(f"[DEBUG] [DirMdGenerator] Found a main file : {file.name}, writing the header of the documentation with this file")
                 self.header_written = True

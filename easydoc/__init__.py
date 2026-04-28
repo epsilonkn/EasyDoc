@@ -1,4 +1,4 @@
-#/actual_version : 1.2.8
+#/actual_version : 1.4.0
 #/file_intro
 """
 This package is the root of EasyDoc and exports the package-level modules
