@@ -1,10 +1,10 @@
 {
-    "#/actual_version" : {"ref" : "%version%", "type" : "Version", "is_list" : false},
-    "#/author" : {"ref" : "%author%", "type" : "Author", "is_list" : false},
-    "#/creation_date" : {"ref" : "%creation_date%", "type" : "Creation_date", "is_list" : false},
-    "#/last_release_date" : {"ref" : "%last_release_date%", "type" : "Last_release_date", "is_list" : false},
-    "#/TODO" : {"ref" : "%TODO%", "type" : "TODO", "is_list" : true},
-    "#/planned" : {"ref" : "%roadmap%", "type" : "Roadmap", "is_list" : true},
-    "#/file_intro" : {"ref" : "%intro%", "type" : "Sum-up", "is_list" : false},
-    "#/const" : {"ref" : "%const%", "type" : "Constants", "is_list" : true}
+    "#/actual_version" : {"ref" : "%version%", "type" : "Version", "title" : "Version", "is_list" : false},
+    "#/author" : {"ref" : "%author%", "type" : "Author", "title" : "Auteur", "is_list" : false},
+    "#/creation_date" : {"ref" : "%creation_date%", "type" : "Creation_date", "title" : "Date de création", "is_list" : false},
+    "#/last_release_date" : {"ref" : "%last_release_date%", "type" : "Last_release_date", "title" : "Date de dernière version", "is_list" : false},
+    "#/TODO" : {"ref" : "%TODO%", "type" : "TODO", "title" : "À faire", "is_list" : true},
+    "#/planned" : {"ref" : "%roadmap%", "type" : "Roadmap", "title" : "Feuille de route", "is_list" : true},
+    "#/file_intro" : {"ref" : "%intro%", "type" : "Sum-up", "title" : "Introduction", "is_list" : false},
+    "#/const" : {"ref" : "%const%", "type" : "Constants", "title" : "Constantes", "is_list" : true}
 }

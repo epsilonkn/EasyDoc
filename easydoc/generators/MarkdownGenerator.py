@@ -63,6 +63,10 @@ class MdGenerator:
     def _file_wrap(name) : 
         """Return a markdown header for a file section."""
         return f"\n## Fichier {name} :\n---\n"
+    @staticmethod
+    def _custom_wrap(name, value) : 
+        """Return a markdown header for a custom comment section."""
+        return f"\n{name} : {value}\n \\"
     
 
     # --------------- files related functions ------------------
@@ -96,19 +100,19 @@ class MdGenerator:
     # --------------- generation functions ------------------
 
 
-    def generate_custom_list(self, customs : list[Custom_comment], type_):
+    def generate_custom_list(self, customs : list[Custom_comment], title : str):
         """Generate documentation for a list of custom comments.
 
         Args:
             customs (list[Custom_comment]): Custom comments to render.
             type_ (str): The type of custom comment list to generate.
+            title (str): The title for the custom comment list.
 
         Returns:
             str: The generated markdown block for the custom list.
         """
-        md = self._custom_list_wrap(type_)
-        elem_list = [cust for cust in customs if cust.type_ == type_]
-        for elem in elem_list:
+        md = self._custom_list_wrap(title)
+        for elem in customs:
             md += elem.content + "\n\\\n"
         return md
     
@@ -168,11 +172,11 @@ class OneFileMdGenerator(MdGenerator):
             if elt.type_ in self.custom_done:
                 continue
             elif elt.is_list :
-                part = self.generate_custom_list(custom_list, elt.type_)
+                part = self.generate_custom_list([custom for custom in custom_list if custom.type_ == elt.type_], elt.title)
                 self.body = self.body.replace(elt.ref, part)
                 self.custom_done.append(elt.type_)
             else :
-                self.body = self.body.replace(elt.ref, f"{self._custom_header_wrap(elt.type_.replace("_"," "))}{elt.content}\n\\")
+                self.body = self.body.replace(elt.ref, self._custom_wrap(elt.title, elt.content))
 
                 self.custom_done.append(elt.type_)
         
@@ -235,11 +239,11 @@ class DirMdGenerator(MdGenerator):
                     if elt.type_ in self.custom_done:
                         continue
                     elif elt.is_list :
-                        part = self.generate_custom_list(file.file_data, elt.type_)
+                        part = self.generate_custom_list([custom for custom in file.file_data if custom.type_ == elt.type_], elt.title)
                         self.body = self.body.replace(elt.ref, part)
                         self.custom_done.append(elt.type_)
                     else :
-                        self.body = self.body.replace(elt.ref, f"{self._custom_header_wrap(elt.type_.replace("_"," "))}{elt.content}\n\\")
+                        self.body = self.body.replace(elt.ref, self._custom_wrap(elt.title, elt.content))
 
                         self.custom_done.append(elt.type_)
                 

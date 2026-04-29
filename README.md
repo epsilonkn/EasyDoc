@@ -205,7 +205,7 @@ __--debug :__ Start the debug mode for generation, meaning package will print at
 |-|-|-|
 |V 1.2.0 | Adding custom comment line to add info to the documentation| Done |
 |V 1.3.0| Better control over the process when done in a program | suppressed from the planning |
-|V 1.4.0| V 1.4.1 : implementing main file usage in the process \ V 1.4.2 - implementing file meta data in onefile dir doc| In test...|
+|V 1.4.0| V 4 : treatment of dirs \ V 1.4.1 : implementing main file usage in the process \ V 1.4.2 - implementing file meta data in onefile dir doc| In test...|
 |V 1.5.0| Generating the doc as a html file | |
 |V 1.6.0| Translation in differents languages | |
 |V 1.?.0| Adding user configuration | |

@@ -58,16 +58,18 @@ class Parsed_function:
 class Custom_comment:
     """Represents a custom comment block extracted from source files."""
 
-    def __init__(self, type_, ref, is_list, content):
+    def __init__(self, type_ : str, ref : str , title : str, is_list : bool, content : str):
         """Initialize a custom comment block.
 
         Args:
             type_ (str): The type of custom comment.
             ref (str): The reference token used to replace custom comment placeholders.
+            title (str): The title of the custom comment.
             is_list (bool): Whether the comment should be treated as a list.
             content (str): The comment content.
         """
         self.type_ : str = type_
+        self.title : str = title
         self.ref : str = ref
         self.is_list : bool = is_list
         self.content : str = content

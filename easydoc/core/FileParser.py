@@ -126,11 +126,27 @@ class Parser:
                     pointer +=1
                     
             case _ :
-                content = lines[pointer].replace(custom, "").replace("\n", "")
+                content =self._isolate_sentence(lines[pointer], custom)
                 pointer += 1
-        obj = Custom_comment(self.customs[custom]["type"], self.customs[custom]["ref"], self.customs[custom]["is_list"], content )
+        obj = Custom_comment(self.customs[custom]["type"], self.customs[custom]["ref"], self.customs[custom]["title"], self.customs[custom]["is_list"], content )
         self.file_data.append(obj)
         return pointer
+    
+
+    def _isolate_sentence(self, line : str, custom : str) -> str:
+        """Extract the content following a custom marker in a line.
+
+        Args:
+            line (str): The source line containing the marker.
+            marker (str): The custom marker to isolate.
+
+        Returns:
+            str: The content following the marker, stripped of whitespace.
+        """
+        line = line.replace(custom, "")
+        if re.match(r"^\s*$", line.split(":")[0]):
+            line = line[line.index(":")+1:]
+        return line.strip()
 
 
     def is_class(self, line: str) -> bool:
