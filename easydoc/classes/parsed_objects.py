@@ -1,5 +1,6 @@
 #/actual_version : 1.1.0
 #/TODO Update parsed object for decorators and nested classes
+#/TODO Take in count the return type of the functions
 #/file_intro
 """
 This module declares the parsed object containers that represent file structure,
@@ -24,6 +25,8 @@ class Parsed_file:
         self.content_list = content_list
         self.file_data = file_data
 
+
+
 class Parsed_function:
     """Represents a parsed function """
 
@@ -38,6 +41,8 @@ class Parsed_function:
         self.declaration : str = ""
         self.set_declaration(declaration)
         self.docstring : str = docstring
+        self.nested_functions : list["Parsed_function"] = []
+        self.nested_comments : list["Custom_comment"] = []
 
 
     def set_declaration(self, declaration):
@@ -50,9 +55,18 @@ class Parsed_function:
         self.name = re.search(r"^\s*def\s+([a-zA-Z_]\w*)", declaration).group(1)
 
     
+    def add_nested_funct(self, funct : "Parsed_function"):
+        self.nested_functions.append(funct)
+
+
+    def add_nested_comment(self, comment : "Custom_comment"):
+        self.nested_comments.append(comment)
+
+    
     def __str__(self):
         """Return the parsed element name."""
         return self.name
+
 
 
 class Custom_comment:
@@ -75,6 +89,7 @@ class Custom_comment:
         self.content : str = content
 
 
+
 class Parsed_class:
     """Represents a parsed class and its methods."""
 
@@ -90,6 +105,7 @@ class Parsed_class:
         self.set_declaration(declaration)
         self.docstring : str = docstring
         self.methods : list[Parsed_function] = []
+        self.nested_comments : list["Custom_comment"] = []
 
 
     def set_declaration(self, declaration):
@@ -109,6 +125,10 @@ class Parsed_class:
             method (Parsed_function): The parsed method to add.
         """
         self.methods.append(method)
+
+    
+    def add_nested_comment(self, comment : Custom_comment):
+        self.nested_comments.append(comment)
 
 
     def __str__(self):
