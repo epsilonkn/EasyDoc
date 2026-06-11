@@ -9,7 +9,7 @@ validates the requested path, and starts file or directory documentation generat
 from argparse import ArgumentParser
 from importlib.metadata import version
 
-from .core import (
+from easydoc.core import (
     TreatmentManager, 
     InteractiveManager, 
     is_valid_path, 

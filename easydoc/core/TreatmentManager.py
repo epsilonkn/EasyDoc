@@ -1,5 +1,4 @@
-#/actual_version : 1.0.0
-#/TODO Add progress logging
+#/actual_version : 1.1.0
 #/file_intro
 """
 This module manages the treatment workflow for a single file or a directory,
@@ -9,7 +8,7 @@ including parsing files and generating the final documentation output.
 import os
 from pathlib import Path
 
-from easydoc.classes import Parsed_file, Custom_comment, Parsed_function, Parsed_class, Node, Leaf
+from easydoc.classes import Parsed_file, Node, Leaf
 from easydoc.generators import OneFileMdGenerator, DirMdGenerator
 
 from easydoc.core import Parser
@@ -54,14 +53,12 @@ class TreatmentManager:
                 self._treat_dir()
             
 
-    def _parse_file(self, path: str) -> tuple[list[Parsed_class, Parsed_function], list[Custom_comment]]:
+    def _parse_file(self, path: str) -> Parsed_file:
         """Treat a single file and generate its documentation"""
         if Path(path).suffix != ".py":
             raise ValueError(f"The path {path} is not a Python file")   
         parser = Parser(path, debug=self.debug)
-        content_list = parser.get_parse()
-        file_data = parser.get_file_data()
-        return content_list, file_data
+        return parser.fobject
 
 
     def _search_file(self, path: str, parent : Node | None = None, depth: int = 0) -> Node:
@@ -88,7 +85,7 @@ class TreatmentManager:
                     if self.debug:
                         print(f"[DEBUG] [TreatmentManager] Treating the file : {(root / file).full_path}")
                     leaf = root / Leaf(file)
-                    leaf.associated_parse = Parsed_file(leaf.full_path, *self._parse_file(os.path.join(path, file)))
+                    leaf.associated_parse = self._parse_file(os.path.join(path, file))
 
             return root
         else :
@@ -99,8 +96,8 @@ class TreatmentManager:
         """Treat a single file and generate its documentation"""
         if path is None:
             path = self.path
-        content, data = self._parse_file(path)
-        OneFileMdGenerator(content, data, Path(path).stem, debug = self.debug)
+        fobject = self._parse_file(path)
+        OneFileMdGenerator(fobject, debug = self.debug)
 
 
     def _treat_dir(self):

@@ -1,4 +1,4 @@
-#/actual_version : 1.2.3
+#/actual_version : 1.3.0
 #/last_release_date : 17/04/2026                          
 #/author : Ywan GERARD
 #/TODO Add support for more custom comment types and nested declarations
@@ -9,11 +9,12 @@ and README-style custom comment markers for documentation generation.
 """
 
 
+from easydoc.classes import Parsed_class, Parsed_function, Custom_comment, Parsed_file
+from .utils import METHOD, FUNCTION
 from importlib.resources import files
-import json
 from pathlib import Path
+import json
 import re
-from easydoc.classes import Parsed_class, Parsed_function, Custom_comment
 
 
 
@@ -30,10 +31,19 @@ class Parser:
         self.debug = debug
         self.fpath = Path(path)
         self.fname = self.fpath.stem
+
+        self.fobject : Parsed_file = Parsed_file(self.fname)
+
         self.parse : list[Parsed_class, Parsed_function] = []
-        self.customs : dict = self.open_custom_config()
         self.file_data : list[Custom_comment] = []
+        self.customs : dict = self.open_custom_config()
+
         self.pointer = 0
+
+        #/const context : this var defines in which object the current parsing occurs (can be the file, a class or a function)
+        self.context : Parsed_class | Parsed_function | Parsed_file = self.fobject
+        self.context_memory : list[Parsed_class | Parsed_function | Parsed_file ] = []
+
         self.parse_source()
 
 
@@ -53,6 +63,34 @@ class Parser:
             list[Custom_comment]: The parsed custom comments.
         """
         return self.file_data
+    
+
+    def set_context(self, new_context : Parsed_class | Parsed_function | None) :
+        if new_context.level > self.context.level :
+            self.context_memory.append(self.context)
+            self.context.add_content(new_context)
+            self.context = new_context
+
+        elif new_context.level < self.context.level :
+            self.context_memory = self.context_memory[0:new_context.level]
+            self.context_memory[-1].add_content(new_context)
+            self.context = new_context
+
+        else :
+            if len(self.context_memory) < 2 : raise IndexError(f"Erreur de racine entre {self.context}({self.context.level}) et {new_context}({new_context.level})")
+            self.context_memory[-1].add_content(new_context)
+            self.context = new_context
+
+
+
+
+    def get_level(self, line : str):
+        i = count = 0
+        while line[i] == "\t" or line[i:i+4] == " "*4:
+            if line[i:i+4] == " "*4 : i += 4
+            else : i += 1
+            count += 1
+        return count + 1
 
 
     def parse_source(self):
@@ -67,16 +105,43 @@ class Parser:
 
             if self.is_class(source[self.pointer]): 
                 if self.debug:
-                    print(f"[DEBUG] [Parser] Found a class declaration at line {self.pointer} : {source[self.pointer]}")
-                self.pointer += self.class_parser(source[self.pointer:])
+                    print(f"[DEBUG] [Parser] Found a class declaration at line {self.pointer} : {source[self.pointer].replace("\n", "")}")
+                new = Parsed_class(source[self.pointer], self.get_level(source[self.pointer]))
+                self.set_context(new)
+                self.pointer += 1
  
-            elif self.is_function(source[self.pointer:]): 
-                if self.debug:
-                    print(f"[DEBUG] [Parser] Found a function declaration at line {self.pointer} : {source[self.pointer]}")
-                self.pointer += self.function_parser(source[self.pointer:])
 
-            elif custom:=self.is_custom(source[ self.pointer]) :
-                self.pointer += self.parse_custom(custom, source[self.pointer:])
+            elif self.is_function(source[self.pointer:]):
+                if self.debug:
+                    print(f"[DEBUG] [Parser] Found a function declaration at line {self.pointer} : {source[self.pointer].replace("\n", "")}")
+                lvl = self.get_level(source[self.pointer])
+                declaration, pointer = self.get_function_declaration(source[self.pointer:])
+                self.pointer += pointer
+                new = Parsed_function(
+                    declaration, 
+                    METHOD if isinstance(self.context, Parsed_class) else FUNCTION, 
+                    lvl)
+                self.set_context(new) 
+
+            elif custom:=self.is_custom(source[self.pointer]) :
+                content = self._isolate_sentence(source[self.pointer], custom)
+                obj = Custom_comment(self.customs[custom]["type"], self.customs[custom]["ref"], self.customs[custom]["title"], self.customs[custom]["is_list"], content )
+                self.context.add_comment(obj)
+                self.pointer += 1
+
+            elif self.is_oneline_docstring(source[self.pointer]) : 
+                docstring = self.format_string(source[self.pointer].replace('"""', ""))
+                self.context.docstring = docstring
+                self.pointer +=1
+
+            elif self.is_docstring(source[self.pointer]) : 
+                docstring = self.format_string(source[self.pointer].replace('"""', ""))
+                self.pointer +=1
+                while not self.is_docstring(source[self.pointer]):
+                    docstring += self.format_string(source[self.pointer].replace('"""', ""))
+                    self.pointer +=1
+                self.pointer +=1
+                self.context.docstring = docstring
 
             else :
                 self.pointer += 1
@@ -107,30 +172,7 @@ class Parser:
         Returns:
             int: Number of source lines consumed by the custom block.
         """
-        pointer = 0
-        content = ""
-        match custom :
-            case "#/file_intro" :
-                pointer += 1
-                if self.is_oneline_docstring(lines[pointer]) : 
-
-                    content = self.format_string(lines[pointer].replace('"""', ""))
-                    pointer +=1
-
-                elif self.is_docstring(lines[pointer]) : 
-                    content = self.format_string(lines[pointer].replace('"""', ""))
-                    pointer +=1
-                    while not self.is_docstring(lines[pointer]):
-                        content += self.format_string(lines[pointer].replace('"""', "")).replace("\t", "")
-                        pointer +=1
-                    pointer +=1
-                    
-            case _ :
-                content =self._isolate_sentence(lines[pointer], custom)
-                pointer += 1
-        obj = Custom_comment(self.customs[custom]["type"], self.customs[custom]["ref"], self.customs[custom]["title"], self.customs[custom]["is_list"], content )
-        self.file_data.append(obj)
-        return pointer
+        pass
     
 
     def _isolate_sentence(self, line : str, custom : str) -> str:
@@ -144,7 +186,7 @@ class Parser:
             str: The content following the marker, stripped of whitespace.
         """
         line = line.replace(custom, "")
-        if re.match(r"^\s*$", line.split(":")[0]):
+        if re.match(r"^\s*$", line.split(":")[0]) and ':' in line:
             line = line[line.index(":")+1:]
         return line.strip()
 
@@ -173,8 +215,7 @@ class Parser:
         Returns:
             bool: True if the lines begin a function declaration, False otherwise.
         """
-        if not in_class : pat = r"^def\s+[a-zA-Z_]\w*\s*\(.*"
-        else : pat = r"^\s+def\s+[a-zA-Z_]\w*\s*\(.*"
+        pat = r"\s*def\s+[a-zA-Z_]\w*\s*\(.*"
         pointer = 0
 
         if re.search(pat, lines[0]) :

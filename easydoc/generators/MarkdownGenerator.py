@@ -1,4 +1,4 @@
-#/actual_version : 1.4.0
+#/actual_version : 1.5.0
 #/TODO Improve markdown output for nested structures and constants
 #/file_intro
 """
@@ -43,6 +43,14 @@ class MdGenerator:
     def _class_wrap(name) : 
         """Return a markdown header for a class section."""
         return f"\n### Classe {name} :\n---\n"
+    @staticmethod
+    def _nested_class_wrap(name, parent) : 
+        """Return a markdown header for a nested class section."""
+        return f"\n### Classe imbriquée {name} dans {parent} :\n---\n"
+    @staticmethod
+    def _nested_function_wrap(name, parent) : 
+        """Return a markdown header for a nested function section."""
+        return f"\n#### Fonction imbriquée {name} dans {parent} :\n---\n"
     @staticmethod
     def _method_wrap(name) : 
         """Return a markdown header for a method section."""
@@ -117,25 +125,33 @@ class MdGenerator:
         return md
     
 
-    def generate_class(self, classe : Parsed_class):
+    def generate_class(self, classe : Parsed_class, nested : bool = False, parent : str = ""):
         """Generate the markdown block for a parsed class."""
         if self.debug:
             print(f"[DEBUG] [DirMdGenerator] Generating documentation for the class {classe.name}")
-        subbody = self._class_wrap(classe.name)
+        subbody = self._class_wrap(classe.name) if not nested else self._nested_class_wrap(classe.name, parent)
         subbody += f"\nDéclaration :\n\n\t{classe.declaration}"
         subbody += f"\nDescription :\n{classe.docstring}"
-        for func in classe.methods:
-            if self.debug:
-                print(f"[DEBUG] [DirMdGenerator] Generating documentation for the method {classe.name}.{func.name}")
-            subbody += self.generate_function(func, True)
-
+        for elem in classe.content :
+            if isinstance(elem, Parsed_function):
+                if self.debug:
+                    print(f"[DEBUG] [DirMdGenerator] Generating documentation for the method {classe.name}.{elem.name}")
+                subbody += self.generate_function(elem, in_class = True)
+            else :
+                if self.debug:
+                    print(f"[DEBUG] [DirMdGenerator] Generating documentation for the nested class {classe.name}.{elem.name}")
+                subbody += self.generate_class(elem, nested = True, parent = classe.name)
         return subbody
 
 
-    def generate_function(self, func : Parsed_function, in_class : bool = False):
+    def generate_function(self, func : Parsed_function, in_class : bool = False, nested : bool = False, parent : str = ""):
         """Generate the markdown block for a parsed function or method."""
         if in_class :
             subbody = self._method_wrap(func.name)
+        elif nested :
+            if self.debug:
+                print(f"[DEBUG] [DirMdGenerator] Generating documentation for the nested function {func.name}")
+            subbody = self._nested_function_wrap(func.name, parent)
         else : 
             if self.debug:
                 print(f"[DEBUG] [DirMdGenerator] Generating documentation for the function {func.name}")
@@ -146,6 +162,16 @@ class MdGenerator:
         if func.docstring:
             subbody += f"\nDescription :\n\n{func.docstring}"
 
+        for elem in func.content :
+            if isinstance(elem, Parsed_function):
+                if self.debug:
+                    print(f"[DEBUG] [DirMdGenerator] Generating documentation for the nested function {func.name} > {elem.name}")
+                subbody += self.generate_function(elem, nested = True, parent = func.name)
+            else :
+                if self.debug:
+                    print(f"[DEBUG] [DirMdGenerator] Generating documentation for the nested class {func.name}.{elem.name}")
+                subbody += self.generate_class(elem, nested = True, parent = func.name)
+
         return subbody
 
 
@@ -153,7 +179,7 @@ class MdGenerator:
 class OneFileMdGenerator(MdGenerator):
     """Generate a single markdown documentation file for a list of parsed objects."""
 
-    def __init__(self, obj_list : list[Parsed_class, Parsed_function], custom_list : list[Custom_comment], fname : str, debug : bool = False):
+    def __init__(self, fobject : Parsed_file, debug : bool = False):
         """Initialize and generate a documentation markdown file for a single source module.
 
         Args:
@@ -165,14 +191,14 @@ class OneFileMdGenerator(MdGenerator):
 
         super().__init__(debug)
         
-        self.body = self.body.replace("%module_name%", fname)
+        self.body = self.body.replace("%module_name%", fobject.name)
         if self.debug :
-            print(f"[DEBUG] [DirMdGenerator] Treating the file {fname}")
-        for elt in custom_list :
+            print(f"[DEBUG] [DirMdGenerator] Treating the file {fobject.name}")
+        for elt in fobject.comments :
             if elt.type_ in self.custom_done:
                 continue
             elif elt.is_list :
-                part = self.generate_custom_list([custom for custom in custom_list if custom.type_ == elt.type_], elt.title)
+                part = self.generate_custom_list([custom for custom in fobject.comments if custom.type_ == elt.type_], elt.title)
                 self.body = self.body.replace(elt.ref, part)
                 self.custom_done.append(elt.type_)
             else :
@@ -188,17 +214,17 @@ class OneFileMdGenerator(MdGenerator):
         if self.debug and temp :
             print("[DEBUG] [DirMdGenerator] unused customs : ", ", ".join(temp))
 
-        for elt in obj_list :
+        for elt in fobject.content :
             if isinstance(elt, Parsed_class):
                 self.body += self.generate_class(elt)
 
-        for elt in obj_list :
+        for elt in fobject.content :
             if isinstance(elt, Parsed_function):
                 self.body += self.generate_function(elt)
 
         self.body = re.sub(r"\\\n[^a-zA-Z]*\n", "\n", self.body)
 
-        self.create_file(fname, self.body)
+        self.create_file(fobject.name, self.body)
 
 
 

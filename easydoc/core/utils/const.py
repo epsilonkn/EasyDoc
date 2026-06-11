@@ -27,3 +27,7 @@ TYPES = ["file", "dir"]
 YES_ANSWERS = ["y", "yes", "1", "true"]
 #/const NO_ANSWERS defines the list of falsy responses that can be used in the CLI for boolean arguments.
 NO_ANSWERS = ["n", "no", "0", "false"]
+
+FUNCTION = 0
+
+METHOD = 1

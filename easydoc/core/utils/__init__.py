@@ -6,17 +6,18 @@ This package initializer re-exports EasyDoc helper constants and utility functio
 for use by the core and interactive modules.
 """
 
-from .const import AUTHORIZED_ARGS, LANGUAGES, FORMATS, SHORT_CUT_ARGS, TYPES, YES_ANSWERS, NO_ANSWERS
+from .const import AUTHORIZED_ARGS, LANGUAGES, FORMATS, SHORT_CUT_ARGS, TYPES, YES_ANSWERS, NO_ANSWERS, FUNCTION, METHOD
 from .function_utils import *
 
 __all__ = [
-"AUTHORIZED_ARGS", 
-"LANGUAGES", 
-"FORMATS", 
-"SHORT_CUT_ARGS",
-"TYPES",
-"YES_ANSWERS",
-"NO_ANSWERS",
-"is_valid_path"
-
+    "AUTHORIZED_ARGS", 
+    "LANGUAGES", 
+    "FORMATS", 
+    "SHORT_CUT_ARGS",
+    "TYPES",
+    "YES_ANSWERS",
+    "NO_ANSWERS",
+    "is_valid_path",
+    "FUNCTION",
+    "METHOD"
 ]

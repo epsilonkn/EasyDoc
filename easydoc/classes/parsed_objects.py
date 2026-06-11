@@ -1,4 +1,4 @@
-#/actual_version : 1.1.0
+#/actual_version : 1.2.0
 #/TODO Update parsed object for decorators and nested classes
 #/TODO Take in count the return type of the functions
 #/file_intro
@@ -8,13 +8,13 @@ function and class metadata, and extracted custom comments.
 """
 
 import re
+from typing import Union
 
 
-class Parsed_file:
-    """Represents a parsed Python file and its content."""
+class Parsed_object:
 
-    def __init__(self, name : str, content_list : list["Parsed_class", "Parsed_function"], file_data : list["Custom_comment"]):
-        """Initialize a parsed file container.
+    def __init__(self, name : str, level : int = 0):
+        """Initialize a parsed object.
 
         Args:
             name (str): The file name or file path.
@@ -22,27 +22,50 @@ class Parsed_file:
             file_data (list[Custom_comment]): Custom comments extracted from the file.
         """
         self.name = name
-        self.content_list = content_list
-        self.file_data = file_data
+        self.content : list["Parsed_object"] = []
+        self.comments : list["Custom_comment"] = []
+        self.level = level
+        self.docstring : str = ""
+
+
+    def add_content(self, content : Union["Parsed_object"]):
+        self.content.append(content)
+
+
+    def add_comment(self, data : "Custom_comment"):
+        self.comments.append(data)
 
 
 
-class Parsed_function:
+class Parsed_file(Parsed_object):
+    """Represents a parsed Python file and its content."""
+
+    def __init__(self, name : str):
+        """Initialize a parsed file container.
+
+        Args:
+            name (str): The file name or file path.
+            content_list (list[Parsed_class, Parsed_function]): Parsed classes and functions.
+            file_data (list[Custom_comment]): Custom comments extracted from the file.
+        """
+        super().__init__(name, 0)
+        self.name = name
+
+
+class Parsed_function(Parsed_object):
     """Represents a parsed function """
 
-    def __init__(self, declaration, docstring):
+    def __init__(self, declaration : str, type_ : str, level : int = 1):
         """Initialize a parsed function.
 
         Args:
             declaration (str): The declaration line or block containing the def.
             docstring (str): The docstring content associated with the declaration.
         """
-        self.name : str = ""
+        super().__init__("", level)
         self.declaration : str = ""
         self.set_declaration(declaration)
-        self.docstring : str = docstring
-        self.nested_functions : list["Parsed_function"] = []
-        self.nested_comments : list["Custom_comment"] = []
+        self.funct_type = type_
 
 
     def set_declaration(self, declaration):
@@ -53,14 +76,6 @@ class Parsed_function:
         """
         self.declaration = declaration
         self.name = re.search(r"^\s*def\s+([a-zA-Z_]\w*)", declaration).group(1)
-
-    
-    def add_nested_funct(self, funct : "Parsed_function"):
-        self.nested_functions.append(funct)
-
-
-    def add_nested_comment(self, comment : "Custom_comment"):
-        self.nested_comments.append(comment)
 
     
     def __str__(self):
@@ -90,22 +105,20 @@ class Custom_comment:
 
 
 
-class Parsed_class:
+class Parsed_class(Parsed_object):
     """Represents a parsed class and its methods."""
 
-    def __init__(self, declaration, docstring):
+    def __init__(self, declaration, level : int = 1):
         """Initialize a parsed class.
 
         Args:
             declaration (str): The class declaration string.
             docstring (str): The class docstring content.
         """
-        self.name : str = ""
+        super().__init__("", level)
         self.declaration : str = ""
         self.set_declaration(declaration)
-        self.docstring : str = docstring
-        self.methods : list[Parsed_function] = []
-        self.nested_comments : list["Custom_comment"] = []
+        self.level = level
 
 
     def set_declaration(self, declaration):
@@ -118,20 +131,6 @@ class Parsed_class:
         self.name = re.search(r"^\s*class\s+([a-zA-Z_]\w*)", declaration).group(1)
 
 
-    def add_method(self, method : Parsed_function):
-        """Add a method to the parsed class.
-
-        Args:
-            method (Parsed_function): The parsed method to add.
-        """
-        self.methods.append(method)
-
-    
-    def add_nested_comment(self, comment : Custom_comment):
-        self.nested_comments.append(comment)
-
-
     def __str__(self):
         """Return the class name."""
         return self.name
-
