@@ -161,18 +161,6 @@ class Parser:
                 return custom
         return False
     
-
-    def parse_custom(self, custom : str, lines : list[str]):
-        """Parse a custom comment block from the source lines.
-
-        Args:
-            custom (str): The custom marker to parse.
-            lines (list[str]): The source lines starting at the marker location.
-
-        Returns:
-            int: Number of source lines consumed by the custom block.
-        """
-        pass
     
 
     def _isolate_sentence(self, line : str, custom : str) -> str:
@@ -256,84 +244,6 @@ class Parser:
         if not opened and pointer >= len(lines):
             raise IndexError(f"a parenthesis was opened but never closed on line \n {lines[0]}\nFailed to parse the module")
 
-
-    def class_parser(self, sub_source : list[str]) -> int: 
-        """Parse a class block and extract its docstring and method definitions.
-
-        Args:
-            sub_source (list[str]): Source code starting at the class declaration.
-
-        Returns:
-            int: Number of lines consumed while parsing the class block.
-        """
-        obj = Parsed_class(sub_source[0], "")
-        pointer = 1
-        docstring = ""
-        while pointer < len(sub_source) and not self.is_class(sub_source[pointer]) and not self.is_function(sub_source[pointer:]) :
-
-            if self.is_oneline_docstring(sub_source[pointer]) : 
-                docstring = self.format_string(sub_source[pointer].replace('"""', ""))
-                pointer +=1
-
-            elif self.is_docstring(sub_source[pointer]) : 
-                docstring += self.format_string(sub_source[pointer].replace('"""', ""))
-                pointer +=1
-                while not self.is_docstring(sub_source[pointer]):
-                    docstring += self.format_string(sub_source[pointer].replace('"""', ""))
-                    pointer +=1
-                pointer +=1
-
-            elif self.is_function(sub_source[pointer:], in_class=True) : 
-                if self.debug:
-                    print(f"[DEBUG] [Parser] Found a method declaration at line {pointer} : {sub_source[pointer]}")
-                pointer += self.function_parser(sub_source[pointer:], obj)
-
-            else :
-                pointer += 1
-        obj.docstring = docstring
-        self.parse.append(obj)
-        return pointer
-
-
-    def function_parser(self, sub_source : list[str], parent : Parsed_class = None) -> int:
-        """Parse a function or method block and extract its docstring.
-
-        Args:
-            sub_source (list[str]): Source code starting at the function declaration.
-            parent (Parsed_class, optional): If provided, the function is treated as a method of this class.
-                Defaults to None.
-
-        Returns:
-            int: Number of lines consumed while parsing the function block.
-        """
-        declaration, pointer = self.get_function_declaration(sub_source)
-        docstring = ""
-        while pointer < len(sub_source) \
-            and not self.is_function(sub_source[pointer:], in_class=True) \
-            and not self.is_class(sub_source[pointer]) \
-            and not self.is_function(sub_source[pointer:]) :
-                
-                if self.is_oneline_docstring(sub_source[pointer]) : 
-
-                    docstring = self.format_string(sub_source[pointer].replace('"""', ""))
-                    pointer +=1
-
-                elif self.is_docstring(sub_source[pointer]) : 
-                    docstring += self.format_string(sub_source[pointer].replace('"""', ""))
-                    pointer +=1
-                    while not self.is_docstring(sub_source[pointer]):
-                        docstring += self.format_string(sub_source[pointer].replace('"""', ""))
-                        pointer +=1
-                    pointer +=1
-                else :
-                    pointer += 1
-        obj = Parsed_function(declaration, docstring)    
-        if parent :
-            parent.add_method(obj)
-        else :
-            self.parse.append(obj)
-        return pointer
-    
 
     def is_docstring(self, line: str) -> bool:
         """Check whether a line begins a multi-line docstring.
